@@ -52,7 +52,7 @@ intermedia.to_excel(
     f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
 )
 
-n_trials = 200
+n_trials = 300
 
 ###################################################################################################
 
@@ -71,7 +71,7 @@ def objective(trial):
     )
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
-    BATCH_SIZE = 5
+    BATCH_SIZE = 10
     VISIBLE_UNITS = 5 * patch
     CD_K = 2
     EPOCHS = 100
