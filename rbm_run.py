@@ -1,36 +1,20 @@
 
-#import pandas as pd
-#import numpy as np
+
 import pandas as pd
 import plotly.express as px
-#import torch
-#from functools import reduce
 import os
 import optuna
-#from torch.autograd import Variable
-#import torch.optim as optim
-#from torch.utils.data import Dataset
-#from torch.utils.data import DataLoader
 from datetime import date
 import random
-#from sklearn.preprocessing import MinMaxScaler
-#from torch.nn import functional as F
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import  DataLoader
 import numpy as np
-#from functools import reduce
-#from sklearn.preprocessing import MinMaxScaler
-#from torch.utils.data import Dataset
 import torch
-#import torch.nn as nn
-#import torch.nn.functional as F
-#from torch.autograd import Variable
 from sklearn.decomposition import PCA
-#from sklearn.preprocessing import MinMaxScaler
 from utilits.functions import get_train_test, get_stat_after_forward
 from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
 
-
+torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
 random.seed(2020)
 np.random.seed(2020)
@@ -75,11 +59,11 @@ def objective(trial):
     VISIBLE_UNITS = 5 * patch
     CD_K = 2
     EPOCHS = 100
-    CUDA = torch.cuda.is_available()
-    CUDA_DEVICE = 0
+    #CUDA = torch.cuda.is_available()
+    '''CUDA_DEVICE = 0
 
     if CUDA:
-        torch.cuda.set_device(CUDA_DEVICE)
+        torch.cuda.set_device(CUDA_DEVICE)'''
 
 
 
@@ -107,7 +91,7 @@ def objective(trial):
         )
         train_dataset = RBMDataset(Train_X)
         train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
-        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=CUDA)
+        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=True)
 
         ''' Обучаем модель '''
         torch.cuda.empty_cache()
@@ -118,8 +102,8 @@ def objective(trial):
 
                 # batch = batch.view(len(batch), VISIBLE_UNITS)  # flatten input data
 
-                if CUDA:
-                    batch = batch.cuda()
+
+                batch = batch.cuda()
 
                 batch_error = rbm.contrastive_divergence(batch)
 
@@ -130,8 +114,8 @@ def objective(trial):
         for i, batch in enumerate(train_dataloader):
             # batch = batch.view(len(batch), VISIBLE_UNITS)  # flatten input data
 
-            if CUDA:
-                batch = batch.cuda()
+
+            batch = batch.cuda()
 
             feature_set[i * BATCH_SIZE:i * BATCH_SIZE + len(batch)] = rbm.sample_hidden(batch).cpu().numpy()
 
