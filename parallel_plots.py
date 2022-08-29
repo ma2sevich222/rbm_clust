@@ -7,8 +7,8 @@
 import pandas as pd
 import plotly.express as px
 
-file_root = "outputs/switched_rbm2_GC_2020_2022_30min_24_08_2022"
-filename = "intermedia_GC_2020_2022_30min.xlsx"
+file_root = "outputs/switched_rbm2_GC_2020_2022_5min_24_08_2022"
+filename = "intermedia_GC_2020_2022_5min.xlsx"
 name="RBM"
 final_df = pd.read_excel(f"{file_root}/{filename}")  # загружаем результаты  анализа
 
@@ -41,10 +41,10 @@ fig = px.parallel_coordinates(
     },
     range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
     color_continuous_scale=px.colors.sequential.Viridis,
-    title=f"{name}_{filename[:-5]}",
+    title=f"{name}_{filename[:-5]} start: 2021-01-04 00:00:00 end: 2021-07-05 00:00:00",
 )
 
-fig.write_html(f"RBM_{filename[:-5]} start: 2021-01-04 00:00:00 end: 2021-07-05 00:00:00 .html")  # сохраняем в файл
+fig.write_html(f"RBM_{filename[:-5]}.html")  # сохраняем в файл
 fig.show()
 
 

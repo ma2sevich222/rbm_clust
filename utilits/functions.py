@@ -274,7 +274,76 @@ def train_backtest(train_df, labels, patch, train_backtest_window):
 
 
 
+def labeled_get_train_test(train_df, forward_df, patch):
+    train_df["Signal"] = train_df["Signal"].astype(
+        int
+    )
+    forward_df["Signal"] = forward_df["Signal"].astype(
+        int
+    )
+    train_df.loc[train_df["Signal"] == -1, "Signal"] = 0
+    forward_df["Signal"] = 0.5
 
+
+
+    scaler = MinMaxScaler()
+    train_arr = train_df[['Open','High','Low','Close','Volume']].to_numpy()
+    forward_arr = forward_df[['Open','High','Low','Close','Volume']].to_numpy()
+
+    train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
+    train_sample_labels = np.array(
+        [train_df['Signal'].values[i - patch:i] for i in range(len(train_arr) + 1) if i - patch >= 0])
+    forward_samples = [forward_arr[i-patch:i] for i in range(len(forward_arr)+1) if i - patch >= 0]
+    forward_sample_labels = np.array(
+        [forward_df['Signal'].values[i - patch:i] for i in range(len(forward_df) + 1) if i - patch >= 0])
+
+    dates_arr = forward_df['Datetime'].values
+    dates_arr_samp = [dates_arr[i-patch:i] for i in range(len(dates_arr)+1) if i - patch >= 0]
+    # Подготавливаем Обучающие данные
+
+    trainX = []
+    for arr, sig in zip(train_samples, train_sample_labels):
+        arr_normlzd = scaler.fit_transform(arr)
+        arr_comb = np.insert(arr_normlzd, 5, sig, axis=1)
+
+
+        trainX.append(arr_comb.flatten())
+
+
+    # Подготавливаем форвардные данные и Сигналы
+    signal_dates = [i[-1] for i in dates_arr_samp]
+    signal_open = []
+    signal_high = []
+    signal_low = []
+    signal_close = []
+    signal_volume = []
+    forwardX=[]
+
+    for arr, sig in zip (forward_samples, forward_sample_labels):
+        signal_open.append(float(arr[-1, [0]]))
+        signal_high.append(float(arr[-1, [1]]))
+        signal_low.append(float(arr[-1, [2]]))
+        signal_close.append(float(arr[-1, [3]]))
+        signal_volume.append(float(arr[-1, [4]]))
+        arr_normlzd = scaler.fit_transform(arr)
+        arr_comb = np.insert(arr_normlzd, 5, sig, axis=1)
+
+        forwardX.append(arr_comb.flatten())
+
+
+
+    Signals = pd.DataFrame(
+        {
+            "Datetime": signal_dates,
+            "Open": signal_open,
+            "High": signal_high,
+            "Low": signal_low,
+            "Close": signal_close,
+            "Volume": signal_volume,
+        }
+    )
+
+    return np.array(trainX), np.array(forwardX), Signals
 
 
 
