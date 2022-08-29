@@ -7,8 +7,8 @@
 import pandas as pd
 import plotly.express as px
 
-file_root = "outputs/rbm_GC_2020_2022_15min_17_08_2022"
-filename = "intermedia_GC_2020_2022_15min.xlsx"
+file_root = "outputs/switched_rbm2_GC_2020_2022_30min_24_08_2022"
+filename = "intermedia_GC_2020_2022_30min.xlsx"
 name="RBM"
 final_df = pd.read_excel(f"{file_root}/{filename}")  # загружаем результаты  анализа
 
@@ -20,7 +20,9 @@ df_plot = final_df[
         "patch",
         "hidden_units",
         "train_window",
+        "train_backtest_window",
         "forward_window",
+
     ]
 ]
 
@@ -34,6 +36,7 @@ fig = px.parallel_coordinates(
         "patch": "patch(bars)",
         "hidden_units":"n_hidden_units",
         "train_window": "train_window (bars)",
+        "train_backtest_window": "train_backtest_window",
         "forward_window": "forward_window (bars)",
     },
     range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
@@ -41,7 +44,7 @@ fig = px.parallel_coordinates(
     title=f"{name}_{filename[:-5]}",
 )
 
-fig.write_html(f"RBM_{filename[:-5]}.html")  # сохраняем в файл
+fig.write_html(f"RBM_{filename[:-5]} start: 2021-01-04 00:00:00 end: 2021-07-05 00:00:00 .html")  # сохраняем в файл
 fig.show()
 
 

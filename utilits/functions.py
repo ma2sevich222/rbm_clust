@@ -140,4 +140,142 @@ def get_stat_after_forward(
     return df_stats
 
 
+def dbscan_predict(model, X):
+
+    nr_samples = X.shape[0]
+
+    y_new = np.ones(shape=nr_samples, dtype=int) * -1
+
+    for i in range(nr_samples):
+        diff = model.components_ - X[i, :]  # NumPy broadcasting
+
+        dist = np.linalg.norm(diff, axis=1)  # Euclidean distance
+
+        shortest_dist_idx = np.argmin(dist)
+
+        if dist[shortest_dist_idx] < model.eps:
+            y_new[i] = model.labels_[model.core_sample_indices_[shortest_dist_idx]]
+
+    return y_new
+
+
+def train_backtest(train_df, labels, patch, train_backtest_window):
+    dates_arr = train_df['Datetime'].values
+    dates_arr_samp = [dates_arr[i - patch:i] for i in range(len(dates_arr) + 1) if i - patch >= 0]
+    train_arr = train_df[['Open', 'High', 'Low', 'Close', 'Volume']].to_numpy()
+    train_samples = [train_arr[i - patch:i] for i in range(len(train_arr) + 1) if i - patch >= 0]
+    signal_dates = [i[-1] for i in dates_arr_samp]
+    signal_open = []
+    signal_high = []
+    signal_low = []
+    signal_close = []
+    signal_volume = []
+
+    for arr in train_samples:
+        signal_open.append(float(arr[-1, [0]]))
+        signal_high.append(float(arr[-1, [1]]))
+        signal_low.append(float(arr[-1, [2]]))
+        signal_close.append(float(arr[-1, [3]]))
+        signal_volume.append(float(arr[-1, [4]]))
+
+
+    result_df = pd.DataFrame(
+        {
+            "Datetime": signal_dates,
+            "Open": signal_open,
+            "High": signal_high,
+            "Low": signal_low,
+            "Close": signal_close,
+            "Volume": signal_volume,
+        }
+    )
+    result_df['Signal'] = labels
+    result_df.loc[result_df["Signal"] == 0, "Signal"] = -1
+    result_df = result_df[-train_backtest_window:]
+
+    plt_backtesting._MAX_CANDLES = 200_000
+    pd.pandas.set_option("display.max_columns", None)
+    pd.set_option("expand_frame_repr", False)
+    pd.options.display.expand_frame_repr = False
+    pd.set_option("display.precision", 2)
+
+    result_df.set_index("Datetime", inplace=True)
+    result_df.index = pd.to_datetime(result_df.index)
+    result_df = result_df.sort_index()
+
+
+    """ Параметры тестирования """
+    i = 0
+    deposit = 100000  # сумма одного контракта GC & CL
+    comm = 4.6  # GC - комиссия для золота
+
+    """ Тестирвоание """
+
+    df_stats = pd.DataFrame()
+
+    bt = Backtest(
+        result_df,
+        strategy=LazyStrategy,
+        cash=deposit,
+        commission_type="absolute",
+        commission=4.62,
+        features_coeff=10,
+        exclusive_orders=True,
+    )
+    stats = bt.run()[:27]
+
+    df_stats = df_stats.append(stats, ignore_index=True)
+    Original_Net_Profit = (
+            df_stats.loc[i, "Equity Final [$]"]
+            - deposit
+            - df_stats.loc[i, "# Trades"] * comm
+    )
+    result_df.loc[result_df["Signal"] == -1, "Signal"] = -111
+    result_df.loc[result_df["Signal"] == 1, "Signal"] = -1
+    result_df.loc[result_df["Signal"] == -111, "Signal"] = 1
+
+    #print('switcged',result_df)
+    """ Параметры тестирования """
+    i = 0
+    deposit = 100000  # сумма одного контракта GC & CL
+    comm = 4.6  # GC - комиссия для золота
+
+    """ Тестирвоание """
+
+    df_stats = pd.DataFrame()
+
+    bt = Backtest(
+        result_df,
+        strategy=LazyStrategy,
+        cash=deposit,
+        commission_type="absolute",
+        commission=4.62,
+        features_coeff=10,
+        exclusive_orders=True,
+    )
+    stats = bt.run()[:27]
+
+    df_stats = df_stats.append(stats, ignore_index=True)
+    Switched_Net_Profit = (
+            df_stats.loc[i, "Equity Final [$]"]
+            - deposit
+            - df_stats.loc[i, "# Trades"] * comm
+    )
+
+    if Switched_Net_Profit > Original_Net_Profit:
+        switch_signals = 1
+    else:
+        switch_signals = 0
+    return switch_signals
+
+
+
+
+
+
+
+
+
+
+
 
