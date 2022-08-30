@@ -1,3 +1,10 @@
+#######################################################
+# Copyright © 2021-2099 Ekosphere. All rights reserved
+# Author: Evgeny Matusevich
+# Contacts: <ma2sevich222@gmail.com>
+# File: switch_sign_rbm.py
+#######################################################
+
 import pandas as pd
 import plotly.express as px
 import os
@@ -7,55 +14,14 @@ import random
 from torch.utils.data import  DataLoader
 import numpy as np
 import torch
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
 from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
 
-def get_train_test(train_df, forward_df, patch):
-    scaler = MinMaxScaler()
-    train_arr = train_df[['Open','High','Low','Close','Volume']].to_numpy()
-    forward_arr = forward_df[['Open','High','Low','Close','Volume']].to_numpy()
-    train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
-    forward_samples = [forward_arr[i-patch:i] for i in range(len(forward_arr)+1) if i - patch >= 0]
-    dates_arr = forward_df['Datetime'].values
-    dates_arr_samp = [dates_arr[i-patch:i] for i in range(len(dates_arr)+1) if i - patch >= 0]
-    # Подготавливаем Обучающие данные
-    trainX = []
-    for arr in train_samples:
-        arr_normlzd = scaler.fit_transform(arr)
-        trainX.append(arr_normlzd.flatten())
+if not os.path.isdir("outputs"):
+    os.makedirs("outputs")
 
-    # Подготавливаем форвардные данные и Сигналы
-    signal_dates = [i[-1] for i in dates_arr_samp]
-    signal_open = []
-    signal_high = []
-    signal_low = []
-    signal_close = []
-    signal_volume = []
-    forwardX=[]
-    for arr in forward_samples:
-        signal_open.append(float(arr[-1, [0]]))
-        signal_high.append(float(arr[-1, [1]]))
-        signal_low.append(float(arr[-1, [2]]))
-        signal_close.append(float(arr[-1, [3]]))
-        signal_volume.append(float(arr[-1, [4]]))
-        arr_normlzd = scaler.fit_transform(arr)
-        forwardX.append(arr_normlzd.flatten())
-
-    Signals = pd.DataFrame(
-        {
-            "Datetime": signal_dates,
-            "Open": signal_open,
-            "High": signal_high,
-            "Low": signal_low,
-            "Close": signal_close,
-            "Volume": signal_volume,
-        }
-    )
-
-    return np.array(trainX), np.array(forwardX), Signals
 
 torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
@@ -80,39 +46,47 @@ intermedia.to_excel(
     f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
 )
 
+n_trials = 1000
 
-start_forward_time = "2021-01-04 00:00:00"
-df = pd.read_csv(f"{source}/{source_file_name}")
-forward_index = df[df["Datetime"] == start_forward_time].index[0]
-end_test_index = df[df["Datetime"] == end_test_time].index[0]
-df = df[:end_test_index]
+###################################################################################################
 
-"""""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
+def objective(trial):
+    start_forward_time = "2021-01-04 00:00:00"
+    df = pd.read_csv(f"{source}/{source_file_name}")
+    forward_index = df[df["Datetime"] == start_forward_time].index[0]
+    end_test_index = df[df["Datetime"] == end_test_time].index[0]
+    df = df[:end_test_index]
 
-patch = trial.suggest_int("patch", 2, 60, step=2)
-HIDDEN_UNITS = trial.suggest_int("hidden_units", 5, 100, step=5)
-train_window = trial.suggest_categorical("train_window", [2640, 5280, 10560])
-train_backtest_window = trial.suggest_categorical("train_backtest_window", [880, 2640])
-forward_window = trial.suggest_categorical(
+    """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
+
+    patch = trial.suggest_int("patch", 40, 55,)
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 75,)
+    train_window = trial.suggest_categorical("train_window", [2640, 5280, 10560])
+    train_backtest_window = trial.suggest_categorical("train_backtest_window", [88,132,220,440 ])
+    forward_window = trial.suggest_categorical(
         "forward_window", [88, 220, 440, 880]
     )
 
-"""""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
-BATCH_SIZE = 10
-VISIBLE_UNITS = 5 * patch
-CD_K = 2
-EPOCHS = 100
+    """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
+    BATCH_SIZE = 10
+    VISIBLE_UNITS = 5 * patch
+    CD_K = 2
+    EPOCHS = 100
+    #CUDA = torch.cuda.is_available()
+    '''CUDA_DEVICE = 0
+
+    if CUDA:
+        torch.cuda.set_device(CUDA_DEVICE)'''
 
 
 
 
+    df_for_split = df[(forward_index - train_window) :]
+    df_for_split = df_for_split.reset_index(drop=True)
+    n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
 
-df_for_split = df[(forward_index - train_window) :]
-df_for_split = df_for_split.reset_index(drop=True)
-n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
-
-signals = []
-for n in range(n_iters):
+    signals = []
+    for n in range(n_iters):
 
         train_df = df_for_split[:train_window]
 
@@ -197,12 +171,12 @@ for n in range(n_iters):
 
         signals.append(Signals)
 
-signals_combained = pd.concat(signals, ignore_index=True, sort=False)
+    signals_combained = pd.concat(signals, ignore_index=True, sort=False)
 
 
 
 
-df_stata = get_stat_after_forward(
+    df_stata = get_stat_after_forward(
         signals_combained,
         patch,
         HIDDEN_UNITS,
@@ -214,6 +188,87 @@ df_stata = get_stat_after_forward(
         trial.number,
         get_trade_info=True,
     )
-net_profit = df_stata["Net Profit [$]"].values[0]
-Sharpe_Ratio = df_stata["Sharpe Ratio"].values[0]
-trades = df_stata["# Trades"].values[0]
+    net_profit = df_stata["Net Profit [$]"].values[0]
+    Sharpe_Ratio = df_stata["Sharpe Ratio"].values[0]
+    trades = df_stata["# Trades"].values[0]
+    if trades <= 10:
+        net_profit = -222000
+        Sharpe_Ratio = 0
+
+
+    trial.set_user_attr("# Trades", trades)
+    parameters = trial.params
+    parameters.update({"trial": trial.number})
+    parameters.update({"values_0": net_profit})
+    parameters.update({"values_1": Sharpe_Ratio})
+    parameters.update({"# Trades": trades})
+    inter = pd.read_excel(
+        f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
+    )
+    inter = inter.append(parameters, ignore_index=True)
+    inter.to_excel(
+        f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx",
+        index=False,
+    )
+
+    #torch.save(rbm.state_dict(), f"{out_root}/{out_data_root}/weights.pt")
+
+    return net_profit, Sharpe_Ratio
+
+
+sampler = optuna.samplers.TPESampler(seed=2020)
+study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
+study.optimize(objective, n_trials=n_trials)
+
+tune_results = study.trials_dataframe()
+
+tune_results["params_forward_window"] = tune_results["params_forward_window"].astype(
+    int
+)
+tune_results["params_train_window"] = tune_results["params_train_window"].astype(int)
+df_plot = tune_results[
+    [
+        "values_0",
+        "values_1",
+        "user_attrs_# Trades",
+        "params_patch",
+        "params_hidden_units",
+        "params_train_window",
+        "params_forward_window",
+    ]
+]
+
+fig = px.parallel_coordinates(
+    df_plot,
+    color="values_0",
+    labels={
+        "values_0": "Net Profit ($)",
+        "values_1": "Sharpe_Ratio",
+        "user_attrs_# Trades": "Trades",
+        "params_patch": "patch(bars)",
+        "params_hidden_units": "n_hidden_units",
+        "params_train_window": "train_window (bars)",
+        "params_forward_window": "forward_window (bars)",
+    },
+    range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
+    color_continuous_scale=px.colors.sequential.Viridis,
+    title=f"rbm_parameters_select_{source_file_name[:-4]}_optune_epoch_{n_trials}",
+)
+
+fig.write_html(f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.htm")
+fig.show()
+tune_results.to_excel(
+    f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.xlsx"
+)
+
+
+
+
+
+
+
+
+
+
+
+

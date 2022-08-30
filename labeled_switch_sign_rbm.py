@@ -1,4 +1,9 @@
-
+#######################################################
+# Copyright © 2021-2099 Ekosphere. All rights reserved
+# Author: Evgeny Matusevich
+# Contacts: <ma2sevich222@gmail.com>
+# File: labeled_switch_sign_rbm.py
+#######################################################
 
 import pandas as pd
 import plotly.express as px
@@ -10,14 +15,14 @@ from torch.utils.data import  DataLoader
 import numpy as np
 import torch
 from sklearn.decomposition import PCA
-from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
+from utilits.functions import labeled_get_train_test, get_stat_after_forward, train_backtest
 from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
 
 
 
 
-torch.cuda.set_device(1)
+#torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
 random.seed(2020)
 np.random.seed(2020)
@@ -29,11 +34,11 @@ torch.backends.cudnn.benchmark = False
 today = date.today()
 source = "source_root"
 out_root = "outputs"
-source_file_name = "GC_2020_2022_30min.csv"
+source_file_name = "GC_2020_2022_30min_nq90_extr17.csv"
 start_forward_time = "2021-01-04 00:00:00"
 end_test_time = "2021-07-05 00:00:00"
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"switched_rbm2_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"labeled_switched_rbm2_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
@@ -63,7 +68,7 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
-    VISIBLE_UNITS = 5 * patch
+    VISIBLE_UNITS = 6 * patch
     CD_K = 2
     EPOCHS = 100
     #CUDA = torch.cuda.is_available()
@@ -93,7 +98,7 @@ def objective(trial):
         df_for_split = df_for_split[int(forward_window) :]
         df_for_split = df_for_split.reset_index(drop=True)
 
-        Train_X, Forward_X, Signals = get_train_test(
+        Train_X, Forward_X, Signals = labeled_get_train_test(
             train_df, forward_df, patch
         )
         train_dataset = RBMDataset(Train_X)
@@ -246,7 +251,7 @@ fig = px.parallel_coordinates(
     },
     range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
     color_continuous_scale=px.colors.sequential.Viridis,
-    title=f"bayes_parameters_select_{source_file_name[:-4]}_optune_epoch_{n_trials}",
+    title=f"rbm_parameters_select_{source_file_name[:-4]}_optune_epoch_{n_trials}",
 )
 
 fig.write_html(f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.htm")

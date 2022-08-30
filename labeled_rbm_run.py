@@ -1,4 +1,9 @@
-
+#######################################################
+# Copyright © 2021-2099 Ekosphere. All rights reserved
+# Author: Evgeny Matusevich
+# Contacts: <ma2sevich222@gmail.com>
+# File: labeled_rbm_run.py
+#######################################################
 
 import pandas as pd
 import plotly.express as px
@@ -13,6 +18,9 @@ from sklearn.decomposition import PCA
 from utilits.functions import labeled_get_train_test, get_stat_after_forward
 from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
+
+if not os.path.isdir("outputs"):
+    os.makedirs("outputs")
 
 #torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
@@ -224,7 +232,7 @@ fig = px.parallel_coordinates(
     },
     range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
     color_continuous_scale=px.colors.sequential.Viridis,
-    title=f"bayes_parameters_select_{source_file_name[:-4]}_optune_epoch_{n_trials}",
+    title=f"rbm_parameters_select_{source_file_name[:-4]}_optune_epoch_{n_trials}",
 )
 
 fig.write_html(f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.htm")
