@@ -163,7 +163,7 @@ def objective(trial):
     net_profit = df_stata["Net Profit [$]"].values[0]
     Sharpe_Ratio = df_stata["Sharpe Ratio"].values[0]
     trades = df_stata["# Trades"].values[0]
-    if trades <= 300:
+    if trades <= 10:
         net_profit = -222000
         Sharpe_Ratio = 0
 
