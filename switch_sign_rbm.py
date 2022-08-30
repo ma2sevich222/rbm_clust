@@ -50,6 +50,7 @@ n_trials = 1000
 
 ###################################################################################################
 
+
 def objective(trial):
     start_forward_time = "2021-01-04 00:00:00"
     df = pd.read_csv(f"{source}/{source_file_name}")
@@ -59,13 +60,13 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 40, 55, )
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 75, )
+    patch = trial.suggest_int("patch", 40, 55,)
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 75,)
     train_window = trial.suggest_categorical("train_window", [2640, 5280, 10560])
-    train_backtest_window = trial.suggest_categorical("train_backtest_window", [88, 132, 220, 440])
-    forward_window = trial.suggest_categorical(
-        "forward_window", [88, 220, 440, 880]
+    train_backtest_window = trial.suggest_categorical(
+        "train_backtest_window", [88, 132, 220, 440]
     )
+    forward_window = trial.suggest_categorical("forward_window", [88, 220, 440, 880])
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -73,7 +74,7 @@ def objective(trial):
     CD_K = 2  # количество циклов
     EPOCHS = 100
 
-    df_for_split = df[(forward_index - train_window):]
+    df_for_split = df[(forward_index - train_window) :]
     df_for_split = df_for_split.reset_index(drop=True)
     n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
 
@@ -86,19 +87,19 @@ def objective(trial):
             forward_df = df_for_split[train_window:]
         else:
             forward_df = df_for_split[
-                         int(train_window): sum([int(train_window), int(forward_window)])
-                         ]
-        df_for_split = df_for_split[int(forward_window):]
+                int(train_window) : sum([int(train_window), int(forward_window)])
+            ]
+        df_for_split = df_for_split[int(forward_window) :]
         df_for_split = df_for_split.reset_index(drop=True)
 
-        Train_X, Forward_X, Signals = get_train_test(
-            train_df, forward_df, patch
-        )
+        Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
         train_dataset = RBMDataset(Train_X)
-        train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
+        train_dataloader = DataLoader(
+            train_dataset, batch_size=BATCH_SIZE, shuffle=False
+        )
         rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=True)
 
-        """ """" """" Обучаем модель """" """" """
+        """ """ " " """ Обучаем модель """ " " """ """
 
         torch.cuda.empty_cache()
         for epoch in range(EPOCHS):
@@ -111,33 +112,43 @@ def objective(trial):
 
                 epoch_error += batch_error
 
-        feature_set = np.zeros((len(Train_X), HIDDEN_UNITS))  # инициализируем векторы скрытого пространсва
+        feature_set = np.zeros(
+            (len(Train_X), HIDDEN_UNITS)
+        )  # инициализируем векторы скрытого пространсва
 
         for i, batch in enumerate(train_dataloader):
             batch = batch.cuda()
-            feature_set[i * BATCH_SIZE:i * BATCH_SIZE + len(batch)] = rbm.sample_hidden(
-                batch).cpu().numpy()  # получаем значения скрытого пространсва
+            feature_set[i * BATCH_SIZE : i * BATCH_SIZE + len(batch)] = (
+                rbm.sample_hidden(batch).cpu().numpy()
+            )  # получаем значения скрытого пространсва
 
-        '''pca = PCA(n_components=2)
+        """pca = PCA(n_components=2)
         compressed_feature_set = pca.fit_transform(feature_set) # переводим в 2-ое пространство для отрисовки
         df_pca = pd.DataFrame()
         df_pca['param_1'] = compressed_feature_set[:, [0]].reshape(-1)
-        df_pca['param_2'] = compressed_feature_set[:, [1]].reshape(-1)'''
+        df_pca['param_2'] = compressed_feature_set[:, [1]].reshape(-1)"""
         kmeans = KMeans(n_clusters=2, random_state=0)  # задаем кластеризатор
-        features_labels = kmeans.fit_predict(feature_set)  # обучаем, делаем предикт если хотим отрисовать кластеры
-        '''df_pca["Label"] = features_labels
+        features_labels = kmeans.fit_predict(
+            feature_set
+        )  # обучаем, делаем предикт если хотим отрисовать кластеры
+        """df_pca["Label"] = features_labels
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
-        fig.show()'''
-        switch_signals = train_backtest(train_df, features_labels, patch,
-                                        train_backtest_window)  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
+        fig.show()"""
+        switch_signals = train_backtest(
+            train_df, features_labels, patch, train_backtest_window
+        )  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
-        """ """" """" Делаем форвардный анализ """" """" """
+        """ """ " " """ Делаем форвардный анализ """ " " """ """
 
         predictions = []
         for forward_array in Forward_X:
             forward_array = torch.tensor(forward_array, dtype=torch.float32).cuda()
-            trnsfrmd_forward_array = rbm.sample_hidden(forward_array).cpu().numpy()  # получаем скрытые векторы
-            pred = kmeans.predict(trnsfrmd_forward_array.reshape(1, -1).astype(float))  # предсказываем кластер
+            trnsfrmd_forward_array = (
+                rbm.sample_hidden(forward_array).cpu().numpy()
+            )  # получаем скрытые векторы
+            pred = kmeans.predict(
+                trnsfrmd_forward_array.reshape(1, -1).astype(float)
+            )  # предсказываем кластер
 
             if switch_signals == 1:
 
@@ -195,10 +206,7 @@ def objective(trial):
         index=False,
     )
 
-    # torch.save(rbm.state_dict(), f"{out_root}/{out_data_root}/weights.pt")
-
     return net_profit, Sharpe_Ratio
-
 
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
