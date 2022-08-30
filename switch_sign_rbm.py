@@ -5,23 +5,23 @@
 # File: switch_sign_rbm.py
 #######################################################
 
+import os
+import random
+from datetime import date
+
+import numpy as np
+import optuna
 import pandas as pd
 import plotly.express as px
-import os
-import optuna
-from datetime import date
-import random
-from torch.utils.data import  DataLoader
-import numpy as np
 import torch
-from sklearn.decomposition import PCA
-from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
-from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
+from torch.utils.data import DataLoader
+
+from utilits.classes_and_models import RBM, RBMDataset
+from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
 
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
-
 
 torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
@@ -31,13 +31,12 @@ torch.manual_seed(2020)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-
 today = date.today()
 source = "source_root"
 out_root = "outputs"
 source_file_name = "GC_2020_2022_30min.csv"
-start_forward_time = "2021-01-04 00:00:00"
-end_test_time = "2021-07-05 00:00:00"
+start_forward_time = "2021-01-04 00:00:00"  # время начало форварда
+end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
 out_data_root = f"switched_rbm2_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
@@ -47,6 +46,7 @@ intermedia.to_excel(
 )
 
 n_trials = 1000
+
 
 ###################################################################################################
 
@@ -59,10 +59,10 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 40, 55,)
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 75,)
+    patch = trial.suggest_int("patch", 40, 55, )
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 75, )
     train_window = trial.suggest_categorical("train_window", [2640, 5280, 10560])
-    train_backtest_window = trial.suggest_categorical("train_backtest_window", [88,132,220,440 ])
+    train_backtest_window = trial.suggest_categorical("train_backtest_window", [88, 132, 220, 440])
     forward_window = trial.suggest_categorical(
         "forward_window", [88, 220, 440, 880]
     )
@@ -70,18 +70,10 @@ def objective(trial):
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
     VISIBLE_UNITS = 5 * patch
-    CD_K = 2
+    CD_K = 2  # количество циклов
     EPOCHS = 100
-    #CUDA = torch.cuda.is_available()
-    '''CUDA_DEVICE = 0
 
-    if CUDA:
-        torch.cuda.set_device(CUDA_DEVICE)'''
-
-
-
-
-    df_for_split = df[(forward_index - train_window) :]
+    df_for_split = df[(forward_index - train_window):]
     df_for_split = df_for_split.reset_index(drop=True)
     n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
 
@@ -94,9 +86,9 @@ def objective(trial):
             forward_df = df_for_split[train_window:]
         else:
             forward_df = df_for_split[
-                int(train_window) : sum([int(train_window), int(forward_window)])
-            ]
-        df_for_split = df_for_split[int(forward_window) :]
+                         int(train_window): sum([int(train_window), int(forward_window)])
+                         ]
+        df_for_split = df_for_split[int(forward_window):]
         df_for_split = df_for_split.reset_index(drop=True)
 
         Train_X, Forward_X, Signals = get_train_test(
@@ -112,43 +104,38 @@ def objective(trial):
             epoch_error = 0.0
 
             for batch in train_dataloader:
-
-                # batch = batch.view(len(batch), VISIBLE_UNITS)  # flatten input data
-
-
                 batch = batch.cuda()
 
                 batch_error = rbm.contrastive_divergence(batch)
 
                 epoch_error += batch_error
 
-        feature_set = np.zeros((len(Train_X), HIDDEN_UNITS))
+        feature_set = np.zeros((len(Train_X), HIDDEN_UNITS))  # инициализируем векторы скрытого пространсва
 
         for i, batch in enumerate(train_dataloader):
-            # batch = batch.view(len(batch), VISIBLE_UNITS)  # flatten input data
-
-
             batch = batch.cuda()
-
-            feature_set[i * BATCH_SIZE:i * BATCH_SIZE + len(batch)] = rbm.sample_hidden(batch).cpu().numpy()
+            feature_set[i * BATCH_SIZE:i * BATCH_SIZE + len(batch)] = rbm.sample_hidden(
+                batch).cpu().numpy()  # получаем значения скрытого пространсва
 
         '''pca = PCA(n_components=2)
-        compressed_feature_set = pca.fit_transform(feature_set)
+        compressed_feature_set = pca.fit_transform(feature_set) # переводим в 2-ое пространство для отрисовки
         df_pca = pd.DataFrame()
         df_pca['param_1'] = compressed_feature_set[:, [0]].reshape(-1)
         df_pca['param_2'] = compressed_feature_set[:, [1]].reshape(-1)'''
-        kmeans = KMeans(n_clusters=2, random_state=0)
-        features_labels = kmeans.fit_predict(feature_set)
+        kmeans = KMeans(n_clusters=2, random_state=0)  # задаем кластеризатор
+        features_labels = kmeans.fit_predict(feature_set)  # обучаем, делаем предикт если хотим отрисовать кластеры
         '''df_pca["Label"] = features_labels
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
         fig.show()'''
-        switch_signals = train_backtest(train_df, features_labels, patch, train_backtest_window )
+        switch_signals = train_backtest(train_df, features_labels, patch,
+                                        train_backtest_window)  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
+        ''' Делаем форвардный анализ '''
         predictions = []
         for forward_array in Forward_X:
             forward_array = torch.tensor(forward_array, dtype=torch.float32).cuda()
-            trnsfrmd_forward_array = rbm.sample_hidden(forward_array).cpu().numpy()
-            pred = kmeans.predict(trnsfrmd_forward_array.reshape(1, -1).astype(float))
+            trnsfrmd_forward_array = rbm.sample_hidden(forward_array).cpu().numpy()  # получаем скрытые векторы
+            pred = kmeans.predict(trnsfrmd_forward_array.reshape(1, -1).astype(float))  # предсказываем кластер
 
             if switch_signals == 1:
 
@@ -166,15 +153,11 @@ def objective(trial):
 
                     predictions.append(int(pred))
 
-
         Signals["Signal"] = predictions
 
         signals.append(Signals)
 
     signals_combained = pd.concat(signals, ignore_index=True, sort=False)
-
-
-
 
     df_stata = get_stat_after_forward(
         signals_combained,
@@ -195,7 +178,6 @@ def objective(trial):
         net_profit = -222000
         Sharpe_Ratio = 0
 
-
     trial.set_user_attr("# Trades", trades)
     parameters = trial.params
     parameters.update({"trial": trial.number})
@@ -211,7 +193,7 @@ def objective(trial):
         index=False,
     )
 
-    #torch.save(rbm.state_dict(), f"{out_root}/{out_data_root}/weights.pt")
+    # torch.save(rbm.state_dict(), f"{out_root}/{out_data_root}/weights.pt")
 
     return net_profit, Sharpe_Ratio
 
@@ -260,15 +242,3 @@ fig.show()
 tune_results.to_excel(
     f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.xlsx"
 )
-
-
-
-
-
-
-
-
-
-
-
-
