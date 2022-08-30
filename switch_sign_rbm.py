@@ -98,7 +98,8 @@ def objective(trial):
         train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False)
         rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=True)
 
-        ''' Обучаем модель '''
+        """ """" """" Обучаем модель """" """" """
+
         torch.cuda.empty_cache()
         for epoch in range(EPOCHS):
             epoch_error = 0.0
@@ -130,7 +131,8 @@ def objective(trial):
         switch_signals = train_backtest(train_df, features_labels, patch,
                                         train_backtest_window)  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
-        ''' Делаем форвардный анализ '''
+        """ """" """" Делаем форвардный анализ """" """" """
+
         predictions = []
         for forward_array in Forward_X:
             forward_array = torch.tensor(forward_array, dtype=torch.float32).cuda()
