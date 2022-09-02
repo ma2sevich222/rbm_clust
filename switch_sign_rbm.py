@@ -37,7 +37,7 @@ source_file_name = "GC_2020_2022_30min.csv"
 start_forward_time = "2021-01-04 00:00:00"  # время начало форварда
 end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"switched_rbm2_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
