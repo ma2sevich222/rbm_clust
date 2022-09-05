@@ -7,8 +7,8 @@
 import pandas as pd
 import plotly.express as px
 
-file_root = "outputs/switched_rbm2_GC_2020_2022_5min_24_08_2022"
-filename = "intermedia_GC_2020_2022_5min.xlsx"
+file_root = "outputs/switched_rbm2_GC_2020_2022_30min_24_08_2022"
+filename = "intermedia_GC_2020_2022_30min.xlsx"
 name="RBM"
 final_df = pd.read_excel(f"{file_root}/{filename}")  # загружаем результаты  анализа
 

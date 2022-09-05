@@ -8,7 +8,6 @@
 import os
 import random
 from datetime import date
-
 import numpy as np
 import optuna
 import pandas as pd
@@ -23,7 +22,7 @@ from utilits.functions import get_train_test, get_stat_after_forward, train_back
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-torch.cuda.set_device(1)
+#torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
 random.seed(2020)
 np.random.seed(2020)
@@ -38,7 +37,7 @@ source_file_name = "GC_2019_2022_30min.csv"
 start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
 end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"start_01_11_switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"best_Back_test_witched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
@@ -52,22 +51,21 @@ n_trials = 1000
 
 
 def objective(trial):
-    # activating_func = torch.nn.Sigmoid()
-    # start_forward_time = "2021-01-04 00:00:00"
+
+
     df = pd.read_csv(f"{source}/{source_file_name}")
     forward_index = df[df["Datetime"] == start_forward_time].index[0]
     end_test_index = df[df["Datetime"] == end_test_time].index[0]
-    # df = df[:end_test_index]
+    #df = df[:end_test_index]
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 2, 60, step=2)
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 5, 100, step=5)
-    train_window = trial.suggest_categorical("train_window", [2640, 5280, 10560])
-    train_backtest_window = trial.suggest_categorical(
-        "train_backtest_window", [220, 880, 1760, 2640]
-    )
-    forward_window = trial.suggest_categorical("forward_window", [88, 132, 220, 880])
+    patch = 56
+    HIDDEN_UNITS = 49
+    train_window = 10560
+    train_backtest_window = 440
+    forward_window = 88
+    bla_bla = trial.suggest_categorical("bla_bla", ['yes', 'no'])
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -75,7 +73,7 @@ def objective(trial):
     CD_K = 2  # количество циклов
     EPOCHS = 100
 
-    df_for_split = df[(forward_index - train_window - (patch - 1)):]
+    df_for_split = df[(forward_index - train_window - (patch -1) ) :]
     df_for_split = df_for_split.reset_index(drop=True)
     n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
 
@@ -88,9 +86,9 @@ def objective(trial):
             forward_df = df_for_split[train_window:]
         else:
             forward_df = df_for_split[
-                         int(train_window): sum([int(train_window), int(forward_window)])
-                         ]
-        df_for_split = df_for_split[int(forward_window):]
+                int(train_window) : sum([int(train_window), int(forward_window)])
+            ]
+        df_for_split = df_for_split[int(forward_window) :]
         df_for_split = df_for_split.reset_index(drop=True)
 
         Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
@@ -99,7 +97,7 @@ def objective(trial):
             train_dataset, batch_size=BATCH_SIZE, shuffle=False
         )
         torch.manual_seed(2020)
-        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=True)
+        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K,  use_cuda=True)
 
         """ """ " " """ Обучаем модель """ " " """ """
 
@@ -120,7 +118,7 @@ def objective(trial):
 
         for i, batch in enumerate(train_dataloader):
             batch = batch.cuda()
-            feature_set[i * BATCH_SIZE: i * BATCH_SIZE + len(batch)] = (
+            feature_set[i * BATCH_SIZE : i * BATCH_SIZE + len(batch)] = (
                 rbm.sample_hidden(batch).cpu().numpy()
             )  # получаем значения скрытого пространсва
 
@@ -210,10 +208,9 @@ def objective(trial):
 
     return net_profit, Sharpe_Ratio
 
-
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
-study.optimize(objective, n_trials=n_trials, n_jobs=5)
+study.optimize(objective, n_trials=n_trials)
 
 tune_results = study.trials_dataframe()
 
