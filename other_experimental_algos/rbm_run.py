@@ -19,8 +19,8 @@ from utilits.functions import get_train_test, get_stat_after_forward
 from utilits.classes_and_models import RBM, RBMDataset
 from sklearn.cluster import KMeans
 
-if not os.path.isdir("outputs"):
-    os.makedirs("outputs")
+if not os.path.isdir("../outputs"):
+    os.makedirs("../outputs")
 
 torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(2020)
