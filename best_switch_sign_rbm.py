@@ -35,7 +35,7 @@ source = "source_root"
 out_root = "outputs"
 source_file_name = "GC_2019_2022_30min.csv"
 start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
-end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
+#end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
 out_data_root = f"best_Back_test_witched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
@@ -44,7 +44,7 @@ intermedia.to_excel(
     f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
 )
 
-n_trials = 1000
+n_trials = 1
 
 
 ###################################################################################################
@@ -55,13 +55,13 @@ def objective(trial):
 
     df = pd.read_csv(f"{source}/{source_file_name}")
     forward_index = df[df["Datetime"] == start_forward_time].index[0]
-    end_test_index = df[df["Datetime"] == end_test_time].index[0]
+    #end_test_index = df[df["Datetime"] == end_test_time].index[0]
     #df = df[:end_test_index]
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = 56
-    HIDDEN_UNITS = 49
+    patch = 59
+    HIDDEN_UNITS = 50
     train_window = 10560
     train_backtest_window = 440
     forward_window = 88

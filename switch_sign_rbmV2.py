@@ -17,13 +17,13 @@ import torch
 from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader
 
-from utilits.classes_and_models import RBM, RBMDataset
-from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
+from utilits.classes_and_models import RBM_V2, RBMDataset
+from utilits.functions import get_train_test_binary, get_stat_after_forward, binary_train_backtest
 
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-torch.cuda.set_device(1)
+#torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(666)
 random.seed(666)
 np.random.seed(666)
@@ -38,7 +38,7 @@ source_file_name = "GC_2019_2022_30min.csv"
 start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
 # end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"lean_1_11_bt_switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"binary_1_11_bt_switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
@@ -52,7 +52,7 @@ n_trials = 1000
 
 
 def objective(trial):
-
+    activating_func = torch.nn.ReLU(inplace=True)
     df = pd.read_csv(f"{source}/{source_file_name}")
     forward_index = df[df["Datetime"] == start_forward_time].index[0]
     # end_test_index = df[df["Datetime"] == end_test_time].index[0]
@@ -71,7 +71,7 @@ def objective(trial):
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
     VISIBLE_UNITS = 5 * patch
-    CD_K = 10  # количество циклов
+    CD_K = 2  # количество циклов
     EPOCHS = 100
 
     df_for_split = df[(forward_index - train_window - (patch - 1)):]
@@ -92,13 +92,13 @@ def objective(trial):
         df_for_split = df_for_split[int(forward_window):]
         df_for_split = df_for_split.reset_index(drop=True)
 
-        Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
+        Train_X, Forward_X, Signals = get_train_test_binary(train_df, forward_df, patch)
         train_dataset = RBMDataset(Train_X)
         train_dataloader = DataLoader(
             train_dataset, batch_size=BATCH_SIZE, shuffle=False
         )
         torch.manual_seed(666)
-        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, use_cuda=True)
+        rbm = RBM_V2(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, activating_func, use_cuda=True)
 
         """ """ " " """ Обучаем модель """ " " """ """
 
@@ -135,7 +135,7 @@ def objective(trial):
         """df_pca["Label"] = features_labels
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
         fig.show()"""
-        switch_signals = train_backtest(
+        switch_signals = binary_train_backtest(
             train_df, features_labels, patch, train_backtest_window
         )  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
