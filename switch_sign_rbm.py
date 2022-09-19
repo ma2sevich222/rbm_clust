@@ -23,7 +23,7 @@ from utilits.functions import get_train_test, get_stat_after_forward, train_back
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-torch.cuda.set_device(1)
+#torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(666)
 random.seed(666)
 np.random.seed(666)
@@ -36,9 +36,9 @@ source = "source_root"
 out_root = "outputs"
 source_file_name = "GC_2019_2022_30min.csv"
 start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
-# end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
+end_test_time = "2021-11-30 21:30:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"lean_1_11_bt_switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"1_11_30_11_Back_test_switched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
@@ -55,18 +55,20 @@ def objective(trial):
 
     df = pd.read_csv(f"{source}/{source_file_name}")
     forward_index = df[df["Datetime"] == start_forward_time].index[0]
-    # end_test_index = df[df["Datetime"] == end_test_time].index[0]
-    # df = df[:end_test_index]
+    end_test_index = df[df["Datetime"] == end_test_time].index[0]
+    df = df[:end_test_index]
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 30, 65 )
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 10, 100, step=5)
-    train_window = trial.suggest_categorical("train_window", [5280, 8800, 10560])
+    patch = trial.suggest_int("patch", 45, 50 )
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 20, 30)
+    #train_window = trial.suggest_categorical("train_window", [5280, 8800, 10560])
     train_backtest_window = trial.suggest_categorical(
         "train_backtest_window", [220, 440, 880, 2640, 5280]
     )
-    forward_window = trial.suggest_categorical("forward_window", [88, 220, 440, 880])
+    #forward_window = trial.suggest_categorical("forward_window", [88, 220, 440, 880])
+    train_window = 8800
+    forward_window = 952
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -89,6 +91,7 @@ def objective(trial):
             forward_df = df_for_split[
                          int(train_window): sum([int(train_window), int(forward_window)])
                          ]
+        print(len(forward_df))
         df_for_split = df_for_split[int(forward_window):]
         df_for_split = df_for_split.reset_index(drop=True)
 

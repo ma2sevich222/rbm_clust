@@ -1,4 +1,4 @@
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import pandas as pd
 import numpy as np
 from backtesting import Backtest
@@ -14,6 +14,7 @@ def get_train_test(train_df, forward_df, patch):
     train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
     forward_samples = [forward_arr[i-patch:i] for i in range(len(forward_arr)+1) if i - patch >= 0]
     dates_arr = forward_df['Datetime'].values
+    #dates_arr = forward_df.index.values
     dates_arr_samp = [dates_arr[i-patch:i] for i in range(len(dates_arr)+1) if i - patch >= 0]
     # Подготавливаем Обучающие данные
     trainX = []
@@ -51,7 +52,51 @@ def get_train_test(train_df, forward_df, patch):
 
     return np.array(trainX), np.array(forwardX), Signals
 
+def std_get_train_test(train_df, forward_df, patch):
+    scaler = StandardScaler()
+    train_arr = train_df[['Open','High','Low','Close','Volume']].to_numpy()
+    forward_arr = forward_df[['Open','High','Low','Close','Volume']].to_numpy()
+    train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
+    forward_samples = [forward_arr[i-patch:i] for i in range(len(forward_arr)+1) if i - patch >= 0]
+    dates_arr = forward_df['Datetime'].values
 
+
+    dates_arr_samp = [dates_arr[i-patch:i] for i in range(len(dates_arr)+1) if i - patch >= 0]
+    # Подготавливаем Обучающие данные
+    trainX = []
+    for arr in train_samples:
+        arr_normlzd = scaler.fit_transform(arr)
+        trainX.append(arr_normlzd.flatten())
+
+    # Подготавливаем форвардные данные и Сигналы
+    signal_dates = [i[-1] for i in dates_arr_samp]
+    signal_open = []
+    signal_high = []
+    signal_low = []
+    signal_close = []
+    signal_volume = []
+    forwardX=[]
+    for arr in forward_samples:
+        signal_open.append(float(arr[-1, [0]]))
+        signal_high.append(float(arr[-1, [1]]))
+        signal_low.append(float(arr[-1, [2]]))
+        signal_close.append(float(arr[-1, [3]]))
+        signal_volume.append(float(arr[-1, [4]]))
+        arr_normlzd = scaler.fit_transform(arr)
+        forwardX.append(arr_normlzd.flatten())
+
+    Signals = pd.DataFrame(
+        {
+            "Datetime": signal_dates,
+            "Open": signal_open,
+            "High": signal_high,
+            "Low": signal_low,
+            "Close": signal_close,
+            "Volume": signal_volume,
+        }
+    )
+
+    return np.array(trainX), np.array(forwardX), Signals
 def get_stat_after_forward(
     result_df,
     lookback_size,
@@ -161,6 +206,8 @@ def dbscan_predict(model, X):
 
 def train_backtest(train_df, labels, patch, train_backtest_window):
     dates_arr = train_df['Datetime'].values
+    #dates_arr = train_df.index.values
+
     dates_arr_samp = [dates_arr[i - patch:i] for i in range(len(dates_arr) + 1) if i - patch >= 0]
     train_arr = train_df[['Open', 'High', 'Low', 'Close', 'Volume']].to_numpy()
     train_samples = [train_arr[i - patch:i] for i in range(len(train_arr) + 1) if i - patch >= 0]
@@ -189,6 +236,7 @@ def train_backtest(train_df, labels, patch, train_backtest_window):
             "Volume": signal_volume,
         }
     )
+
     result_df['Signal'] = labels
     result_df.loc[result_df["Signal"] == 0, "Signal"] = -1
     result_df = result_df[-train_backtest_window:]
@@ -401,7 +449,6 @@ def binary_train_backtest(train_df, labels, patch, train_backtest_window):
     else:
         switch_signals = 0
     return switch_signals
-
 
 
 
