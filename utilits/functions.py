@@ -179,7 +179,7 @@ def get_stat_after_forward(
         result_df[
             ["Datetime", "Open", "High", "Low", "Close", "Volume", "Signal"]
         ].to_csv(
-            f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_lookback_size{lookback_size}.csv"
+            f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv"
         )
 
     return df_stats

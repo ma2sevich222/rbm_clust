@@ -1,4 +1,4 @@
-from forward.forward import ForwardAnalysis
+from forward import ForwardAnalysis
 import pandas as pd
 from typing import Union
 from os.path import exists

@@ -37,13 +37,14 @@ class WindowDaysGenerator:
     test_window = TestWindowDescriptor()
     start_test_point = StartTestPointDescriptor()
 
-    def __init__(self, data, train_window, test_window, start_test_point, first_train_window):
+    def __init__(self, data, timeframe, train_window, test_window, start_test_point, first_train_window):
         """
         Конструктор генератора окон из времянного ряда
         :param data: Датасет для анализа
         :param config: Конфиг со всей информацией о форварде
         """
         self.data = data
+        self.timeframe = timeframe
         self.first_train_window = first_train_window
         self.train_window = train_window
         self.test_window = test_window
@@ -68,31 +69,34 @@ class WindowDaysGenerator:
                 previous_end_train_index = index + 1
                 continue
 
-            is_now_clearing = WindowDaysGenerator.is_now_clearing(self.data.index[index])
+            is_now_clearing = self.is_now_clearing(self.data.index[index])
             current_date = self.data.index[index].strftime("%Y-%m-%d")
+            # current_time = self.data.index[index].strftime("%H:%M")
 
-            if current_date > previous_train_date:
+            if current_date > previous_train_date and not self.data.index[index].weekday() > 4:
                 previous_train_date = current_date
                 new_train_counter -= 1
-                # Прошло необходимое число дней, обновляем счетчик
-                if new_train_counter == 0:
-                    new_train_counter = self.test_window
-
+                # # Прошло необходимое число дней, обновляем счетчик
+                # if new_train_counter == 0:
+                #     new_train_counter = self.test_window
+            # print(is_now_clearing, self.data.index[index])
             # Если сейчас клиринг и время подошло, запускаем два окна
             # Или же, если конец датасета
-            if (is_now_clearing and new_train_counter == self.test_window) \
+            if (is_now_clearing and new_train_counter <= 0) \
                     or index == self.data.shape[0] - 1:
                 train_window = previous_end_train_index - train_window_offset, previous_end_train_index
                 test_window = previous_start_test_index, index + 1
                 previous_end_train_index = test_window[1]
                 previous_start_test_index = test_window[1]
                 train_window_offset = self.train_window
-                # print(self.data.index[train_window[0]], self.data.index[train_window[1]],
-                #       self.data.index[test_window[0]], self.data.index[test_window[1]])
+
+                # Прошло необходимое число дней, обновляем счетчик
+                new_train_counter = self.test_window
+                print(self.data.index[train_window[0]], self.data.index[train_window[1] - 1],
+                      self.data.index[test_window[0]], self.data.index[test_window[1] - 1])
                 yield train_window, test_window
 
-    @staticmethod
-    def is_now_clearing(bar_datetime: datetime):
+    def is_now_clearing(self, bar_datetime: datetime):
         """
         Метод для получения клирингового времени
         и текущей дельты изменения в зависимости от времени года
@@ -111,8 +115,8 @@ class WindowDaysGenerator:
         # Проверяем дату, чтобы поменять зимнее на летнее время и наоборот
         if start_new_time < current_date < end_new_time:
             # летнее время
-            start_clearing, end_clearing = "20:30", "22:30"
+            start_clearing, end_clearing = ("20:30", "22:30") if self.timeframe != 60 else ("20:00", "23:00")
         else:
             # зимнее время
-            start_clearing, end_clearing = "21:30", "23:30"
+            start_clearing, end_clearing = ("21:30", "23:30") if self.timeframe != 60 else ("21:00", "00:00")
         return start_clearing == current_time

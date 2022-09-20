@@ -8,6 +8,7 @@
 import os
 import random
 from datetime import date
+
 import numpy as np
 import optuna
 import pandas as pd
@@ -15,57 +16,64 @@ import plotly.express as px
 import torch
 from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader
-
-from utilits.classes_and_models import RBM, RBMDataset
-from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
+from forward.forward import ForwardAnalysis
+from utilits.classes_and_models import RBM_V2, RBMDataset
+from utilits.functions import std_get_train_test, get_stat_after_forward, train_backtest
 
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-#torch.cuda.set_device(1)
-os.environ["PYTHONHASHSEED"] = str(2020)
-random.seed(2020)
-np.random.seed(2020)
-torch.manual_seed(2020)
+# torch.cuda.set_device(1)
+os.environ["PYTHONHASHSEED"] = str(666)
+random.seed(666)
+np.random.seed(666)
+torch.manual_seed(666)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 today = date.today()
 source = "source_root"
 out_root = "outputs"
-source_file_name = "GC_2019_2022_30min.csv"
-start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
-#end_test_time = "2021-11-30 21:30:00"  # конец фоврарда
+source_file_name = "GC_2019_2022_5min.csv"
+t_frame = 5
+# start_forward_time = "2021-11-01 22:45:00" # время начало форварда
+# end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"seed_test_witched_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = (
+    f"tanh_std_with_cliring_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+)
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
     f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
 )
 
-n_trials = 101
+n_trials = 1000
 
 
 ###################################################################################################
 
 
 def objective(trial):
-
-
-    df = pd.read_csv(f"{source}/{source_file_name}")
-    forward_index = df[df["Datetime"] == start_forward_time].index[0]
-    #end_test_index = df[df["Datetime"] == end_test_time].index[0]
-    #df = df[:end_test_index]
+    #activating_func = torch.nn.LogSigmoid()
+    activating_func = torch.nn.Tanh()
+    df = pd.read_csv(f"{source}/{source_file_name}", index_col="Datetime")
+    df.index = pd.to_datetime(df.index)
+    # forward_index = df[df["Datetime"] == start_forward_time].index[0]
+    # end_test_index = df[df["Datetime"] == end_test_time].index[0]
+    # df = df[:end_test_index]
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = 42
-    HIDDEN_UNITS = 100
-    train_window = 8800
-    train_backtest_window = 5280
-    forward_window = 440
-    random_s = trial.suggest_int("random_seed", 1, 800)
+    patch = trial.suggest_int("patch", 2, 250, step=3)
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 10, 250, step=5)
+    train_window = trial.suggest_categorical(
+        "train_window", [15840, 31680, 63360]
+    )
+    train_backtest_window = trial.suggest_categorical(
+        "train_backtest_window", [5280, 10560, 15840]
+    )
+    forward_window = trial.suggest_categorical("forward_window", [2, 5, 10, 20]) # в днях
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -73,32 +81,33 @@ def objective(trial):
     CD_K = 2  # количество циклов
     EPOCHS = 100
 
-    df_for_split = df[(forward_index - train_window - (patch -1) ) :]
-    df_for_split = df_for_split.reset_index(drop=True)
-    n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
-
+    forward = ForwardAnalysis(
+        df,
+        timeframe=t_frame,
+        train_window=train_window,
+        test_window=forward_window,
+        start_test_point="2021-11-01T22:45:00",
+    )
+    train_df_list = []
+    test_df_list = []
     signals = []
-    for n in range(n_iters):
+    for train_w, test_w in forward.run():
+        tr_df = df[train_w[0] : train_w[1]]
+        tr_df = tr_df.reset_index()
+        tst_df = df[test_w[0] - (patch - 1) : test_w[1]]
+        tst_df = tst_df.reset_index()
+        train_df_list.append(tr_df)
+        test_df_list.append(tst_df)
 
-        train_df = df_for_split[:train_window]
+    for train_df, forward_df in zip(train_df_list, test_df_list):
 
-
-        if n == n_iters - 1:
-            forward_df = df_for_split[train_window:]
-        else:
-            forward_df = df_for_split[
-                int(train_window) : sum([int(train_window), int(forward_window)])
-            ]
-        df_for_split = df_for_split[int(forward_window) :]
-        df_for_split = df_for_split.reset_index(drop=True)
-
-        Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
+        Train_X, Forward_X, Signals = std_get_train_test(train_df, forward_df, patch)
         train_dataset = RBMDataset(Train_X)
         train_dataloader = DataLoader(
             train_dataset, batch_size=BATCH_SIZE, shuffle=False
         )
-        torch.manual_seed(random_s)
-        rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K,  use_cuda=True)
+        torch.manual_seed(666)
+        rbm = RBM_V2(VISIBLE_UNITS, HIDDEN_UNITS, CD_K, activating_func, use_cuda=True)
 
         """ """ " " """ Обучаем модель """ " " """ """
 
@@ -209,9 +218,10 @@ def objective(trial):
 
     return net_profit, Sharpe_Ratio
 
+
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
-study.optimize(objective, n_trials=n_trials)
+study.optimize(objective, n_trials=n_trials, n_jobs=5)
 
 tune_results = study.trials_dataframe()
 

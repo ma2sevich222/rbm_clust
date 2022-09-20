@@ -7,14 +7,14 @@ class ForwardAnalysis:
     Класс для форвардного переобучения
     """
 
-    def __init__(self, dataset, train_window, test_window, start_test_point, first_train_window=None):
+    def __init__(self, dataset, timeframe, train_window, test_window, start_test_point, first_train_window=None):
         """
         Конструктор форвардного анализа
         :param dataset: Датасет для анализа
         :param config: Файл конфигурации с настройкаим
         """
         self.window_generator = WindowDaysGenerator(
-            dataset, train_window, test_window,
+            dataset, timeframe, train_window, test_window,
             start_test_point, first_train_window
         )
 
