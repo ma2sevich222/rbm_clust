@@ -11,23 +11,24 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from backtesting.backtesting import Backtest
-from utilits.stop_loss_lazy_strategy import LazyStrategy
+from utilits.lazy_strategy import LazyStrategy
 from backtesting import _plotting as plt_backtesting
 plt_backtesting._MAX_CANDLES = 1_000_000
 
 
 CASH = 100000
 COMMISION = 4.62
-STOP_LOSS = -15.7
+STOP_LOSS = -23.9
 TIMEFRAME = 'GC_30min'
+time_frame = 30
 #MODELTYPE = 'best_sharpe'
-data_df = pd.read_csv('outputs/lean_1_11_bt_switched_rbm_GC_2019_2022_30min_07_09_2022/8_signals_GC_2019_2022_30min_train_window8800forward_window440_patch42.csv')
+data_df = pd.read_csv('outputs/sel_parV32_rbm_GC_2019_2022_30min_22_09_2022/65_signals_GC_2019_2022_30min_train_window8800forward_window20_patch7.csv')
 signal_df = data_df.copy()
 data_df.index = data_df['Datetime']
 data_df.index = pd.to_datetime(data_df.index)
 bt = Backtest(data_df, strategy=LazyStrategy, cash=CASH, commission_type="absolute", commission=COMMISION,
               features_coeff=10, exclusive_orders=True)
-stats = bt.run(stop_loss=STOP_LOSS)
+stats = bt.run(stop_loss=STOP_LOSS, take_profit=50.8, clearing=True, time_frame=time_frame)
 # bt.plot(relative_equity=False)
 trades = stats._trades
 # print(stats['Equity Final [$]'], stats['# Trades'])
@@ -41,4 +42,4 @@ for i in range(len(trades)):
     signal_df.iloc[start_idx: fin_idx, -1] = trades.loc[i, 'Size']
 
 signal_df.index = signal_df['Datetime']
-signal_df.to_csv('signals_best_stop_loss.csv', index=False)
+signal_df.to_csv(' ApateV32_signals_best_stop_loss.csv', index=False)

@@ -8,6 +8,7 @@
 import os
 import random
 from datetime import date
+
 import numpy as np
 import optuna
 import pandas as pd
@@ -15,7 +16,7 @@ import plotly.express as px
 import torch
 from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader
-
+from forward.forward import ForwardAnalysis
 from utilits.classes_and_models import RBM, RBMDataset
 from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
 
@@ -23,10 +24,10 @@ if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
 #torch.cuda.set_device(1)
-os.environ["PYTHONHASHSEED"] = str(2020)
-random.seed(2020)
-np.random.seed(2020)
-torch.manual_seed(2020)
+os.environ["PYTHONHASHSEED"] = str(666)
+random.seed(666)
+np.random.seed(666)
+torch.manual_seed(666)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
@@ -34,17 +35,20 @@ today = date.today()
 source = "source_root"
 out_root = "outputs"
 source_file_name = "GC_2019_2022_30min.csv"
-start_forward_time = "2021-11-01 00:00:00"  # время начало форварда
-#end_test_time = "2021-11-30 21:30:00"  # конец фоврарда
+t_frame = 30
+# start_forward_time = "2021-11-01 22:45:00" # время начало форварда
+# end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"seed_test_momentum_01_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = (
+    f"testV31_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+)
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
 intermedia.to_excel(
     f"{out_root}/{out_data_root}/intermedia_{source_file_name[:-4]}.xlsx"
 )
 
-n_trials = 101
+n_trials = 5
 
 
 ###################################################################################################
@@ -52,20 +56,21 @@ n_trials = 101
 
 def objective(trial):
 
-
-    df = pd.read_csv(f"{source}/{source_file_name}")
-    forward_index = df[df["Datetime"] == start_forward_time].index[0]
-    #end_test_index = df[df["Datetime"] == end_test_time].index[0]
-    #df = df[:end_test_index]
+    df = pd.read_csv(f"{source}/{source_file_name}", index_col="Datetime")
+    df.index = pd.to_datetime(df.index)
+    # forward_index = df[df["Datetime"] == start_forward_time].index[0]
+    # end_test_index = df[df["Datetime"] == end_test_time].index[0]
+    # df = df[:end_test_index]
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = 42
-    HIDDEN_UNITS = 100
-    train_window = 8800
-    train_backtest_window = 5280
-    forward_window = 440
-    random_s = trial.suggest_int("random_seed", 1, 800)
+    patch = 33
+    HIDDEN_UNITS = 55
+    train_window = 5280
+    train_backtest_window = 880
+    forward_window = 5 # в днях
+    run_number = trial.suggest_categorical("run_number", [1, 2, 3, 4, 5])
+
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -73,31 +78,32 @@ def objective(trial):
     CD_K = 2  # количество циклов
     EPOCHS = 100
 
-    df_for_split = df[(forward_index - train_window - (patch -1) ) :]
-    df_for_split = df_for_split.reset_index(drop=True)
-    n_iters = (len(df_for_split) - int(train_window)) // int(forward_window)
-
+    forward = ForwardAnalysis(
+        df,
+        timeframe=t_frame,
+        train_window=train_window,
+        test_window=forward_window,
+        start_test_point="2021-11-01T22:45:00",
+    )
+    train_df_list = []
+    test_df_list = []
     signals = []
-    for n in range(n_iters):
+    for train_w, test_w in forward.run():
+        tr_df = df[train_w[0] : train_w[1]]
+        tr_df = tr_df.reset_index()
+        tst_df = df[test_w[0] - (patch - 1) : test_w[1]]
+        tst_df = tst_df.reset_index()
+        train_df_list.append(tr_df)
+        test_df_list.append(tst_df)
 
-        train_df = df_for_split[:train_window]
-
-
-        if n == n_iters - 1:
-            forward_df = df_for_split[train_window:]
-        else:
-            forward_df = df_for_split[
-                int(train_window) : sum([int(train_window), int(forward_window)])
-            ]
-        df_for_split = df_for_split[int(forward_window) :]
-        df_for_split = df_for_split.reset_index(drop=True)
+    for train_df, forward_df in zip(train_df_list, test_df_list):
 
         Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
         train_dataset = RBMDataset(Train_X)
         train_dataloader = DataLoader(
             train_dataset, batch_size=BATCH_SIZE, shuffle=False
         )
-        torch.manual_seed(random_s)
+        torch.manual_seed(666)
         rbm = RBM(VISIBLE_UNITS, HIDDEN_UNITS, CD_K,  use_cuda=True)
 
         """ """ " " """ Обучаем модель """ " " """ """
@@ -136,7 +142,7 @@ def objective(trial):
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
         fig.show()"""
         switch_signals = train_backtest(
-            train_df, features_labels, patch, train_backtest_window
+            train_df, features_labels, patch, train_backtest_window, t_frame
         )  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
         """ """ " " """ Делаем форвардный анализ """ " " """ """
@@ -183,6 +189,7 @@ def objective(trial):
         out_root,
         out_data_root,
         trial.number,
+        t_frame,
         get_trade_info=True,
     )
     net_profit = df_stata["Net Profit [$]"].values[0]
@@ -209,13 +216,14 @@ def objective(trial):
 
     return net_profit, Sharpe_Ratio
 
+
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
-study.optimize(objective, n_trials=n_trials)
+study.optimize(objective, n_trials=n_trials, n_jobs=5)
 
 tune_results = study.trials_dataframe()
 
-tune_results["params_forward_window"] = tune_results["params_forward_window"].astype(
+'''tune_results["params_forward_window"] = tune_results["params_forward_window"].astype(
     int
 )
 tune_results["params_train_window"] = tune_results["params_train_window"].astype(int)
@@ -252,4 +260,4 @@ fig.write_html(f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.
 fig.show()
 tune_results.to_excel(
     f"{out_root}/{out_data_root}/hyp_par_sel_{source_file_name[:-4]}.xlsx"
-)
+)'''

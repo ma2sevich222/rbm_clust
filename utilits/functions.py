@@ -107,6 +107,7 @@ def get_stat_after_forward(
     out_root,
     out_data_root,
     trial_namber,
+    timeframe,
     get_trade_info=False,
 ):
     plt_backtesting._MAX_CANDLES = 200_000
@@ -124,7 +125,7 @@ def get_stat_after_forward(
     """ Параметры тестирования """
     i = 0
     deposit = 100000  # сумма одного контракта GC & CL
-    comm = 4.6  # GC - комиссия для золота
+    comm = 4.62  # GC - комиссия для золота
 
 
     """ Тестирвоание """
@@ -140,11 +141,11 @@ def get_stat_after_forward(
         strategy=LazyStrategy,
         cash=deposit,
         commission_type="absolute",
-        commission=4.62,
+        commission=comm,
         features_coeff=10,
         exclusive_orders=True,
     )
-    stats = bt.run()[:27]
+    stats = bt.run(clearing=True, time_frame=timeframe, wo_clearing_signals_path=f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv")[:27]
 
 
 
@@ -158,21 +159,21 @@ def get_stat_after_forward(
     # df_stats.loc[i, "sell_after"] = sell_after * step
     df_stats["train_window"] = train_window
     df_stats["forward_window"] = forward_window
-    df_stats["lookback_size"] = lookback_size
+    df_stats["patch"] = lookback_size
     df_stats["n_hidden"] = n_hiddens
 
 
 
-    if get_trade_info == True and df_stats["Net Profit [$]"].values > 0:
+    if get_trade_info == True: # and df_stats["Net Profit [$]"].values > 0:
         bt.plot(
-            plot_volume=True,
+            plot_pl=True,
             relative_equity=False,
-            filename=f"{out_root}/{out_data_root}/{trial_namber}_bt_plot_{source_file_name[:-4]}train_window{train_window}forward_window{forward_window}_lookback_size{lookback_size}.html",
+            filename=f"{out_root}/{out_data_root}/{trial_namber}_bt_plot_{source_file_name[:-4]}train_window{train_window}forward_window{forward_window}_patch{lookback_size}.html",
         )
         stats.to_csv(
-            f"{out_root}/{out_data_root}/{trial_namber}_stats_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_lookback_size{lookback_size}.txt"
+            f"{out_root}/{out_data_root}/{trial_namber}_stats_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.txt"
         )
-        result_df["Signal"] = result_df["Signal"].astype(int)
+        '''result_df["Signal"] = result_df["Signal"].astype(int)
 
         result_df.insert(0, "Datetime", result_df.index)
         result_df = result_df.reset_index(drop=True)
@@ -180,7 +181,7 @@ def get_stat_after_forward(
             ["Datetime", "Open", "High", "Low", "Close", "Volume", "Signal"]
         ].to_csv(
             f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv"
-        )
+        )'''
 
     return df_stats
 
@@ -204,7 +205,7 @@ def dbscan_predict(model, X):
     return y_new
 
 
-def train_backtest(train_df, labels, patch, train_backtest_window):
+def train_backtest(train_df, labels, patch, train_backtest_window, timeframe):
     dates_arr = train_df['Datetime'].values
     #dates_arr = train_df.index.values
 
@@ -270,7 +271,7 @@ def train_backtest(train_df, labels, patch, train_backtest_window):
         features_coeff=10,
         exclusive_orders=True,
     )
-    stats = bt.run()[:27]
+    stats = bt.run(clearing=True, time_frame=timeframe)[:27]
 
     df_stats = df_stats.append(stats, ignore_index=True)
     Original_Net_Profit = (
@@ -301,7 +302,7 @@ def train_backtest(train_df, labels, patch, train_backtest_window):
         features_coeff=10,
         exclusive_orders=True,
     )
-    stats = bt.run()[:27]
+    stats = bt.run(clearing=True, time_frame=timeframe)[:27]
 
     df_stats = df_stats.append(stats, ignore_index=True)
     Switched_Net_Profit = (

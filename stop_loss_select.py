@@ -3,11 +3,11 @@ import plotly.express as px
 from backtesting import Backtest
 import backtesting._plotting as plt_backtesting
 import os
-from utilits.new_stop_loss_lazy_strategy import LazyStrategy
+from utilits.lazy_strategy import LazyStrategy
 
-
-file_root = "outputs/lean_1_11_bt_switched_rbm_GC_2019_2022_30min_07_09_2022"
-filename = "8_signals_GC_2019_2022_30min_train_window8800forward_window440_patch42.csv"
+time_frame =30
+file_root = "outputs/sel_parV32_rbm_GC_2019_2022_30min_22_09_2022"
+filename = "65_signals_GC_2019_2022_30min_train_window8800forward_window20_patch7.csv"
 name = "stop loss selection"
 out_root = f"select_stop_for_{filename[:-4]}"
 os.mkdir(f"outputs/{out_root}")
@@ -50,7 +50,7 @@ for i in range(0, N):
     if i == 0:
         stats = bt.run(clearing=True, time_frame=30)
     else:
-        stats = bt.run(stop_loss=stop_l, take_profit=50.8, clearing=True, time_frame=15)
+        stats = bt.run(stop_loss=stop_l, take_profit=50.8, clearing=True, time_frame=time_frame)
     """if (
             stats["Return (Ann.) [%]"] > 0
         ):  # будем показывать и сохранять только доходные разметки

@@ -23,7 +23,7 @@ from utilits.functions import get_train_test, get_stat_after_forward, train_back
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-# torch.cuda.set_device(1)
+#torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(666)
 random.seed(666)
 np.random.seed(666)
@@ -40,7 +40,7 @@ t_frame = 30
 # end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
 out_data_root = (
-    f"sel_par_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+    f"sel_parV31_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 )
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
@@ -64,15 +64,16 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 5, 70, step=2)
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 10, 150, step=5)
+    patch = trial.suggest_int("patch", 30, 45, )
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 40, 130, step=5)
     train_window = trial.suggest_categorical(
         "train_window", [5280, 8800, 10560]
     )
     train_backtest_window = trial.suggest_categorical(
         "train_backtest_window", [220, 440, 880, 2640, 5280]
     )
-    forward_window = trial.suggest_categorical("forward_window", [2, 5, 10, 20]) # в днях
+    forward_window = trial.suggest_categorical("forward_window", [2, 3, 4, 5]) # в днях
+
 
     """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
     BATCH_SIZE = 10
@@ -144,7 +145,7 @@ def objective(trial):
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
         fig.show()"""
         switch_signals = train_backtest(
-            train_df, features_labels, patch, train_backtest_window
+            train_df, features_labels, patch, train_backtest_window, t_frame
         )  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
         """ """ " " """ Делаем форвардный анализ """ " " """ """
@@ -191,6 +192,7 @@ def objective(trial):
         out_root,
         out_data_root,
         trial.number,
+        t_frame,
         get_trade_info=True,
     )
     net_profit = df_stata["Net Profit [$]"].values[0]

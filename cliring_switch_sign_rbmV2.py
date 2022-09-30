@@ -18,7 +18,7 @@ from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader
 from forward.forward import ForwardAnalysis
 from utilits.classes_and_models import RBM_V2, RBMDataset
-from utilits.functions import std_get_train_test, get_stat_after_forward, train_backtest
+from utilits.functions import get_train_test, get_stat_after_forward, train_backtest
 
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
@@ -34,13 +34,13 @@ torch.backends.cudnn.benchmark = False
 today = date.today()
 source = "source_root"
 out_root = "outputs"
-source_file_name = "GC_2019_2022_5min.csv"
-t_frame = 5
+source_file_name = "GC_2019_2022_15min.csv"
+t_frame = 15
 # start_forward_time = "2021-11-01 22:45:00" # время начало форварда
 # end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
 out_data_root = (
-    f"tanh_std_with_cliring_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+    f"log_sig_minmax_with_cliring_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 )
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
@@ -55,8 +55,8 @@ n_trials = 1000
 
 
 def objective(trial):
-    #activating_func = torch.nn.LogSigmoid()
-    activating_func = torch.nn.Tanh()
+    activating_func = torch.nn.LogSigmoid()
+    #activating_func = torch.nn.Tanh()
     df = pd.read_csv(f"{source}/{source_file_name}", index_col="Datetime")
     df.index = pd.to_datetime(df.index)
     # forward_index = df[df["Datetime"] == start_forward_time].index[0]
@@ -65,13 +65,13 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 2, 250, step=3)
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 10, 250, step=5)
+    patch = trial.suggest_int("patch", 10, 60, step=3)
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 15, 90, step=5)
     train_window = trial.suggest_categorical(
-        "train_window", [15840, 31680, 63360]
+        "train_window", [5280, 10560, 17600, 21120]
     )
     train_backtest_window = trial.suggest_categorical(
-        "train_backtest_window", [5280, 10560, 15840]
+        "train_backtest_window", [1760, 3520, 5280]
     )
     forward_window = trial.suggest_categorical("forward_window", [2, 5, 10, 20]) # в днях
 
@@ -101,7 +101,7 @@ def objective(trial):
 
     for train_df, forward_df in zip(train_df_list, test_df_list):
 
-        Train_X, Forward_X, Signals = std_get_train_test(train_df, forward_df, patch)
+        Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
         train_dataset = RBMDataset(Train_X)
         train_dataloader = DataLoader(
             train_dataset, batch_size=BATCH_SIZE, shuffle=False
@@ -145,7 +145,7 @@ def objective(trial):
         fig = px.scatter(df_pca, x="param_1", y="param_2", color="Label")
         fig.show()"""
         switch_signals = train_backtest(
-            train_df, features_labels, patch, train_backtest_window
+            train_df, features_labels, patch, train_backtest_window, t_frame
         )  # делаем бэктест на трэйне, 0 - не меняем сигналы, 1- меняем
 
         """ """ " " """ Делаем форвардный анализ """ " " """ """
@@ -192,6 +192,7 @@ def objective(trial):
         out_root,
         out_data_root,
         trial.number,
+        t_frame,
         get_trade_info=True,
     )
     net_profit = df_stata["Net Profit [$]"].values[0]

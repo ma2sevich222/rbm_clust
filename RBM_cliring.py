@@ -38,10 +38,11 @@ today = date.today()
 source = "source_root"
 out_root = "outputs"
 source_file_name = "GC_2019_2022_30min.csv"
+time_f = 30
 start_forward_time = "2021-11-01 22:45:00"  # время начало форварда
 # end_forward_time = "2022-05-06 09:30:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
-out_data_root = f"with_cliring_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+out_data_root = f"with_cliring_rbmV3.2_{source_file_name[:-4]}_{date_xprmnt}"
 os.mkdir(f"{out_root}/{out_data_root}")
 '''intermedia = pd.DataFrame()
 intermedia.to_excel(
@@ -53,11 +54,11 @@ df.index = pd.to_datetime(df.index)
 
 """""" """""" """""" """""" """"" Параметры данных   """ """ """ """ """ """ """ """ """ ""
 
-patch = 42
-HIDDEN_UNITS = 100
-train_window = 8800
-train_backtest_window = 5280
-forward_window = 10
+patch = 59
+HIDDEN_UNITS = 50
+train_window = 10560
+train_backtest_window = 440
+forward_window = 2
 random_s = 666
 """""" """""" """""" """""" """"" Параметры сети """ """""" """""" """""" """"""
 BATCH_SIZE = 10
@@ -67,7 +68,7 @@ EPOCHS = 100
 
 forward = ForwardAnalysis(
     df,
-
+    timeframe=time_f,
     train_window=train_window,
     test_window=forward_window,
     start_test_point="2021-11-01T22:45:00",
@@ -76,15 +77,15 @@ train_df_list = []
 test_df_list = []
 signals = []
 dates_dict = {'train_start':[], 'train_end':[]}
-for train_window, test_window in forward.run():
-    tr_df = df[train_window[0]:train_window[1]]
+for train_w, test_w in forward.run():
+    tr_df = df[train_w[0]:train_w[1]]
     tr_df =tr_df.reset_index()
-    tst_df = df[test_window[0] - (patch - 1):test_window[1]]
+    tst_df = df[test_w[0] - (patch - 1):test_w[1]]
     tst_df = tst_df.reset_index()
     train_df_list.append(tr_df)
     test_df_list.append(tst_df)
 
-print(train_df_list[0])
+
 for train_df, forward_df in zip(train_df_list, test_df_list):
     dates_dict['train_start'].append(str(train_df['Datetime'].values[0]))
     dates_dict['train_end'].append(str(train_df['Datetime'].values[-1]))
@@ -162,7 +163,7 @@ for train_df, forward_df in zip(train_df_list, test_df_list):
                 predictions.append(int(pred))
 
     Signals["Signal"] = predictions
-    print(Signals)
+
     signals.append(Signals)
 
 signals_combained = pd.concat(signals, sort=False)
