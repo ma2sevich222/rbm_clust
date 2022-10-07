@@ -23,7 +23,7 @@ from utilits.functions import get_train_test, get_stat_after_forward, train_back
 if not os.path.isdir("outputs"):
     os.makedirs("outputs")
 
-#torch.cuda.set_device(1)
+torch.cuda.set_device(1)
 os.environ["PYTHONHASHSEED"] = str(666)
 random.seed(666)
 np.random.seed(666)
@@ -40,7 +40,7 @@ t_frame = 30
 # end_test_time = "2021-07-05 00:00:00"  # конец фоврарда
 date_xprmnt = today.strftime("%d_%m_%Y")
 out_data_root = (
-    f"sel_parV31_rbm_{source_file_name[:-4]}_{date_xprmnt}"
+    f"lean_sel_parV32_rbm_{source_file_name[:-4]}_{date_xprmnt}"
 )
 os.mkdir(f"{out_root}/{out_data_root}")
 intermedia = pd.DataFrame()
@@ -64,13 +64,13 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = trial.suggest_int("patch", 30, 45, )
-    HIDDEN_UNITS = trial.suggest_int("hidden_units", 40, 130, step=5)
+    patch = trial.suggest_int("patch", 20, 45, )
+    HIDDEN_UNITS = trial.suggest_int("hidden_units", 10, 40,)
     train_window = trial.suggest_categorical(
         "train_window", [5280, 8800, 10560]
     )
     train_backtest_window = trial.suggest_categorical(
-        "train_backtest_window", [220, 440, 880, 2640, 5280]
+        "train_backtest_window", [220, 440, 880, 2640]
     )
     forward_window = trial.suggest_categorical("forward_window", [2, 3, 4, 5]) # в днях
 
@@ -86,8 +86,8 @@ def objective(trial):
         timeframe=t_frame,
         train_window=train_window,
         test_window=forward_window,
-        start_test_point="2021-11-01T22:45:00",
-    )
+        start_test_point="2022-01-03T21:30:00",
+    ) # V1 -2021-11-01T22:45:00 V2 -2022-01-03T21:30:00
     train_df_list = []
     test_df_list = []
     signals = []
@@ -222,7 +222,7 @@ def objective(trial):
 
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
-study.optimize(objective, n_trials=n_trials, n_jobs=5)
+study.optimize(objective, n_trials=n_trials)
 
 tune_results = study.trials_dataframe()
 

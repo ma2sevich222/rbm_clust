@@ -6,8 +6,8 @@ import os
 from utilits.lazy_strategy import LazyStrategy
 
 time_frame =30
-file_root = "outputs/sel_parV32_rbm_GC_2019_2022_30min_22_09_2022"
-filename = "65_signals_GC_2019_2022_30min_train_window8800forward_window20_patch7.csv"
+file_root = "outputs/testV31_rbm_GC_2019_2022_30min_06_10_2022"
+filename = "0_signals_GC_2019_2022_30min_train_window5280forward_window5_patch33.csv"
 name = "stop loss selection"
 out_root = f"select_stop_for_{filename[:-4]}"
 os.mkdir(f"outputs/{out_root}")

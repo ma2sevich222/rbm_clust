@@ -18,11 +18,11 @@ plt_backtesting._MAX_CANDLES = 1_000_000
 
 CASH = 100000
 COMMISION = 4.62
-STOP_LOSS = -23.9
+STOP_LOSS = -9.3
 TIMEFRAME = 'GC_30min'
 time_frame = 30
 #MODELTYPE = 'best_sharpe'
-data_df = pd.read_csv('outputs/sel_parV32_rbm_GC_2019_2022_30min_22_09_2022/65_signals_GC_2019_2022_30min_train_window8800forward_window20_patch7.csv')
+data_df = pd.read_csv('outputs/testV31_rbm_GC_2019_2022_30min_06_10_2022/0_signals_GC_2019_2022_30min_train_window5280forward_window5_patch33.csv')
 signal_df = data_df.copy()
 data_df.index = data_df['Datetime']
 data_df.index = pd.to_datetime(data_df.index)
@@ -42,4 +42,4 @@ for i in range(len(trades)):
     signal_df.iloc[start_idx: fin_idx, -1] = trades.loc[i, 'Size']
 
 signal_df.index = signal_df['Datetime']
-signal_df.to_csv(' ApateV32_signals_best_stop_loss.csv', index=False)
+signal_df.to_csv(' 0_ApateV31_signals_best_stop_loss.csv', index=False)

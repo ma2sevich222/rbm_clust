@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
-
+import numpy as np
+import pandas as pd
 
 
 
@@ -202,3 +203,31 @@ class RBM_V2():
             random_probabilities = random_probabilities.cuda()
 
         return random_probabilities
+
+
+
+class Kalman_Smoother():
+   def __init__(self, data_frame, r=0.99, dNoise=2.7, en=0.05):
+     self.Data = data_frame
+     self.r = r
+     self.dNoise = dNoise
+     self.en = en
+   def get_smoothed_df(self):
+     colums_to_be_smoothed = ["Open","High","Low","Close"]
+     smoothed_df = pd.DataFrame()
+     smoothed_df['Datetime'] = self.Data['Datetime'].values
+     for col in colums_to_be_smoothed:
+        N = len(self.Data[col])
+        smoo_ed_col = np.zeros(N)
+        P = np.zeros(N)
+        smoo_ed_col[0] = self.Data.loc[0, col]
+        P[0] = 0
+        for i in range(1,N):
+          Pe = self.r*self.r*P[i-1] + self.en * self.en
+          P[i] = (Pe * self.dNoise)/ (Pe+ self.dNoise)
+          smoo_ed_col[i] = self.r*smoo_ed_col[i-1] + P[i]/self.dNoise*(self.Data.loc[i,col] - self.r*smoo_ed_col[i-1])
+        smoothed_df[col] = smoo_ed_col
+        smoothed_df["Volume"] = self.Data["Volume"].values
+        #smoothed_df["Signal"] = self.Data["Signal"].values
+
+     return smoothed_df

@@ -9,7 +9,7 @@ import plotly.express as px
 
 file_root = "outputs/sel_parV32_rbm_GC_2019_2022_30min_22_09_2022"
 filename = "intermedia_GC_2019_2022_30min.xlsx"
-name = "Apate_V3.2"
+name = "Apate_V3.1"
 final_df = pd.read_excel(f"{file_root}/{filename}")  # загружаем результаты  анализа
 
 df_plot = final_df[
@@ -41,7 +41,7 @@ fig = px.parallel_coordinates(
     },
     range_color=[df_plot["values_0"].min(), df_plot["values_0"].max()],
     color_continuous_scale=px.colors.sequential.Viridis,
-    title=f"{name}_{filename[:-5]} start: 2022-01-03  end: 2022-08-24 ",
+    title=f"{name}_{filename[:-5]} start: 2021-11-01  end: 2022-08-24 ",
 )
 
 fig.write_html(f"{name}_{filename[:-5]}.html")  # сохраняем в файл

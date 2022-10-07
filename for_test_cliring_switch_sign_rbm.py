@@ -219,7 +219,7 @@ def objective(trial):
 
 sampler = optuna.samplers.TPESampler(seed=2020)
 study = optuna.create_study(directions=["maximize", "maximize"], sampler=sampler)
-study.optimize(objective, n_trials=n_trials, n_jobs=5)
+study.optimize(objective, n_trials=n_trials)
 
 tune_results = study.trials_dataframe()
 

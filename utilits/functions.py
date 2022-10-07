@@ -7,53 +7,10 @@ import backtesting._plotting as plt_backtesting
 
 
 
+
+
 def get_train_test(train_df, forward_df, patch):
     scaler = MinMaxScaler()
-    train_arr = train_df[['Open','High','Low','Close','Volume']].to_numpy()
-    forward_arr = forward_df[['Open','High','Low','Close','Volume']].to_numpy()
-    train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
-    forward_samples = [forward_arr[i-patch:i] for i in range(len(forward_arr)+1) if i - patch >= 0]
-    dates_arr = forward_df['Datetime'].values
-    #dates_arr = forward_df.index.values
-    dates_arr_samp = [dates_arr[i-patch:i] for i in range(len(dates_arr)+1) if i - patch >= 0]
-    # Подготавливаем Обучающие данные
-    trainX = []
-    for arr in train_samples:
-        arr_normlzd = scaler.fit_transform(arr)
-        trainX.append(arr_normlzd.flatten())
-
-    # Подготавливаем форвардные данные и Сигналы
-    signal_dates = [i[-1] for i in dates_arr_samp]
-    signal_open = []
-    signal_high = []
-    signal_low = []
-    signal_close = []
-    signal_volume = []
-    forwardX=[]
-    for arr in forward_samples:
-        signal_open.append(float(arr[-1, [0]]))
-        signal_high.append(float(arr[-1, [1]]))
-        signal_low.append(float(arr[-1, [2]]))
-        signal_close.append(float(arr[-1, [3]]))
-        signal_volume.append(float(arr[-1, [4]]))
-        arr_normlzd = scaler.fit_transform(arr)
-        forwardX.append(arr_normlzd.flatten())
-
-    Signals = pd.DataFrame(
-        {
-            "Datetime": signal_dates,
-            "Open": signal_open,
-            "High": signal_high,
-            "Low": signal_low,
-            "Close": signal_close,
-            "Volume": signal_volume,
-        }
-    )
-
-    return np.array(trainX), np.array(forwardX), Signals
-
-def std_get_train_test(train_df, forward_df, patch):
-    scaler = StandardScaler()
     train_arr = train_df[['Open','High','Low','Close','Volume']].to_numpy()
     forward_arr = forward_df[['Open','High','Low','Close','Volume']].to_numpy()
     train_samples = [train_arr[i-patch:i] for i in range(len(train_arr)+1) if i - patch >= 0]
@@ -146,7 +103,7 @@ def get_stat_after_forward(
         exclusive_orders=True,
     )
     stats = bt.run(clearing=True, time_frame=timeframe, wo_clearing_signals_path=f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv")[:27]
-
+    #wo_clearing_signals_path=f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv"
 
 
     df_stats = df_stats.append(stats, ignore_index=True)
@@ -173,7 +130,7 @@ def get_stat_after_forward(
         stats.to_csv(
             f"{out_root}/{out_data_root}/{trial_namber}_stats_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.txt"
         )
-        '''result_df["Signal"] = result_df["Signal"].astype(int)
+        """result_df["Signal"] = result_df["Signal"].astype(int)
 
         result_df.insert(0, "Datetime", result_df.index)
         result_df = result_df.reset_index(drop=True)
@@ -181,7 +138,7 @@ def get_stat_after_forward(
             ["Datetime", "Open", "High", "Low", "Close", "Volume", "Signal"]
         ].to_csv(
             f"{out_root}/{out_data_root}/{trial_namber}_signals_{source_file_name[:-4]}_train_window{train_window}forward_window{forward_window}_patch{lookback_size}.csv"
-        )'''
+        )"""
 
     return df_stats
 
@@ -527,3 +484,23 @@ def binary_train_backtest(train_df, labels, patch, train_backtest_window):
 
 
 
+def sm_std_get_train_test(forward_df, sm_train_df, sm_forward_df, patch):
+    scaler = MinMaxScaler()
+    sm_train_arr = sm_train_df[['Open','High','Low','Close','Volume']].to_numpy()
+    sm_forward_arr = sm_forward_df[['Open','High','Low','Close','Volume']].to_numpy()
+    train_samples = [sm_train_arr[i-patch:i] for i in range(len(sm_train_arr)+1) if i - patch >= 0]
+    forward_samples = [sm_forward_arr[i-patch:i] for i in range(len(sm_forward_arr)+1) if i - patch >= 0]
+    trainX =[]
+    for arr in train_samples:
+        arr_normlzd = scaler.fit_transform(arr)
+        trainX.append(arr_normlzd.flatten())
+
+
+    forwardX=[]
+    for arr in forward_samples:
+        arr_normlzd = scaler.fit_transform(arr)
+        forwardX.append(arr_normlzd.flatten())
+
+    Signals = forward_df[patch-1:]
+
+    return np.array(trainX), np.array(forwardX), Signals
