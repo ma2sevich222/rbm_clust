@@ -2,7 +2,7 @@
 # Copyright © 2021-2099 Ekosphere. All rights reserved
 # Author: Evgeny Matusevich
 # Contacts: <ma2sevich222@gmail.com>
-# File: switch_sign_rbm.py
+# File: for_test_cliring_switch_sign_rbm.py
 #######################################################
 
 import os
