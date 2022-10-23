@@ -64,11 +64,11 @@ def objective(trial):
 
     """""" """""" """""" """""" """"" Параметры для оптимизации   """ """ """ """ """ """ """ """ """ ""
 
-    patch = 33
-    HIDDEN_UNITS = 55
-    train_window = 5280
+    patch = 40
+    HIDDEN_UNITS = 60
+    train_window = 8800
     train_backtest_window = 880
-    forward_window = 5 # в днях
+    forward_window = 3 # в днях
     run_number = trial.suggest_categorical("run_number", [1, 2, 3, 4, 5])
 
 
@@ -88,14 +88,22 @@ def objective(trial):
     train_df_list = []
     test_df_list = []
     signals = []
+    dates_dict = {'train_start': [], 'train_end': [], 'test_start': [], 'test_end': []}
     for train_w, test_w in forward.run():
         tr_df = df[train_w[0] : train_w[1]]
+        print(tr_df)
+        dates_dict['train_start'].append(str(tr_df.index.values[0]))
+        dates_dict['train_end'].append(str(tr_df.index.values[-1]))
         tr_df = tr_df.reset_index()
-        tst_df = df[test_w[0] - (patch - 1) : test_w[1]]
+        tst_df = df[test_w[0]: test_w[1]] # tst_df = df[test_w[0] - (patch - 1) : test_w[1]]
+        dates_dict['test_start'].append(str(tst_df.index.values[0]))
+        dates_dict['test_end'].append(str(tst_df.index.values[-1]))
         tst_df = tst_df.reset_index()
         train_df_list.append(tr_df)
         test_df_list.append(tst_df)
-
+        print(dates_dict)
+    date_df = pd.DataFrame(dates_dict)
+    date_df.to_csv(f"{out_root}/{out_data_root}/only_gen_Apate_train_forward_dates{trial.number}.csv")
     for train_df, forward_df in zip(train_df_list, test_df_list):
 
         Train_X, Forward_X, Signals = get_train_test(train_df, forward_df, patch)
