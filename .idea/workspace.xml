@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b5ae291e-edd6-4eb2-9f4a-465b27eb992a" name="Changes" comment="перед добавлением классификатора">
+      <change beforePath="$PROJECT_DIR$/just_backtest.py" beforeDir="false" afterPath="$PROJECT_DIR$/just_backtest.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2DLNS1Lto9mGFPvlhZOPC9Oya8W" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/not_in_use" />
+      <recent name="$PROJECT_DIR$/other_experimental_algos" />
+      <recent name="$PROJECT_DIR$/outputs/switched_rbm2_GC_2020_2022_5min_24_08_2022" />
+      <recent name="$PROJECT_DIR$/outputs/switched_rbm2_GC_2020_2022_10min_24_08_2022" />
+      <recent name="$PROJECT_DIR$/outputs/switched_rbm2_GC_2020_2022_15min_24_08_2022" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.just_backtest">
+    <configuration name="adapt_cliring_switch_sign_rbm" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rbm_clust" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/adapt_cliring_switch_sign_rbm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="just_backtest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rbm_clust" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/just_backtest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="parallel_plots" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rbm_clust" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/parallel_plots.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="rbm_run" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rbm_clust" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/rbm_run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="switch_sign_rbm" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="rbm_clust" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/switch_sign_rbm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.just_backtest" />
+        <item itemvalue="Python.adapt_cliring_switch_sign_rbm" />
+        <item itemvalue="Python.switch_sign_rbm" />
+        <item itemvalue="Python.rbm_run" />
+        <item itemvalue="Python.parallel_plots" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b5ae291e-edd6-4eb2-9f4a-465b27eb992a" name="Changes" comment="" />
+      <created>1660474401355</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1660474401355</updated>
+      <workItem from="1660474411285" duration="27475000" />
+      <workItem from="1660633408792" duration="4021000" />
+      <workItem from="1660713461018" duration="3476000" />
+      <workItem from="1660749120658" duration="1636000" />
+      <workItem from="1660785416324" duration="2132000" />
+      <workItem from="1660793650949" duration="4124000" />
+      <workItem from="1660888236453" duration="13841000" />
+      <workItem from="1660970040589" duration="2644000" />
+      <workItem from="1661145691299" duration="14500000" />
+      <workItem from="1661178763203" duration="2200000" />
+      <workItem from="1661210334869" duration="25179000" />
+      <workItem from="1661315727157" duration="8704000" />
+      <workItem from="1661336581862" duration="11216000" />
+      <workItem from="1661393635178" duration="4160000" />
+      <workItem from="1661425034866" duration="828000" />
+      <workItem from="1661437560635" duration="443000" />
+      <workItem from="1661468728833" duration="7469000" />
+      <workItem from="1661594966472" duration="865000" />
+      <workItem from="1661643990938" duration="2424000" />
+      <workItem from="1661682382258" duration="1799000" />
+      <workItem from="1661696099114" duration="168000" />
+      <workItem from="1661700368449" duration="314000" />
+      <workItem from="1661744892802" duration="12939000" />
+      <workItem from="1661775629670" duration="812000" />
+      <workItem from="1661776660391" duration="2194000" />
+      <workItem from="1661818600212" duration="1178000" />
+      <workItem from="1661831293229" duration="1046000" />
+      <workItem from="1661832467996" duration="8008000" />
+      <workItem from="1661915590450" duration="6578000" />
+      <workItem from="1662002889172" duration="1249000" />
+      <workItem from="1662005310928" duration="117000" />
+      <workItem from="1662097614174" duration="17320000" />
+      <workItem from="1662159989624" duration="17095000" />
+      <workItem from="1662251439986" duration="7399000" />
+      <workItem from="1662350388059" duration="19033000" />
+      <workItem from="1662417503104" duration="13223000" />
+      <workItem from="1662508286407" duration="9842000" />
+      <workItem from="1662564061640" duration="5248000" />
+      <workItem from="1662593696048" duration="4672000" />
+      <workItem from="1662620653332" duration="647000" />
+      <workItem from="1662630501831" duration="10071000" />
+      <workItem from="1662680881285" duration="4632000" />
+      <workItem from="1662798247377" duration="18704000" />
+      <workItem from="1662893245954" duration="7136000" />
+      <workItem from="1662940767892" duration="1977000" />
+      <workItem from="1662965417494" duration="27049000" />
+      <workItem from="1663047684858" duration="11220000" />
+      <workItem from="1663075997381" duration="20455000" />
+      <workItem from="1663234536318" duration="3868000" />
+      <workItem from="1663239097576" duration="23862000" />
+      <workItem from="1663333254891" duration="1176000" />
+      <workItem from="1663564502661" duration="5780000" />
+      <workItem from="1663575260555" duration="12844000" />
+      <workItem from="1663598873403" duration="2205000" />
+      <workItem from="1663635981205" duration="6619000" />
+      <workItem from="1663654423602" duration="2286000" />
+      <workItem from="1663675710300" duration="2435000" />
+      <workItem from="1663733894534" duration="3025000" />
+      <workItem from="1663747370655" duration="7813000" />
+      <workItem from="1663775213788" duration="128000" />
+      <workItem from="1663809601769" duration="8298000" />
+      <workItem from="1663825399265" duration="2245000" />
+      <workItem from="1663835483445" duration="4997000" />
+      <workItem from="1663847287929" duration="3579000" />
+      <workItem from="1663899536345" duration="666000" />
+      <workItem from="1663913921334" duration="1280000" />
+      <workItem from="1663979596422" duration="1042000" />
+      <workItem from="1664070319274" duration="720000" />
+      <workItem from="1664162221094" duration="116000" />
+      <workItem from="1664176472275" duration="1754000" />
+      <workItem from="1664190704147" duration="7066000" />
+      <workItem from="1664259791507" duration="3190000" />
+      <workItem from="1664272117225" duration="4577000" />
+      <workItem from="1664335702739" duration="4663000" />
+      <workItem from="1664347689531" duration="6152000" />
+      <workItem from="1664360161345" duration="3232000" />
+      <workItem from="1664375953309" duration="20000" />
+      <workItem from="1664437043089" duration="4430000" />
+      <workItem from="1664524020954" duration="2833000" />
+      <workItem from="1664533804074" duration="707000" />
+      <workItem from="1664539349214" duration="4071000" />
+      <workItem from="1664548374442" duration="1108000" />
+      <workItem from="1664623443380" duration="1309000" />
+      <workItem from="1664669881652" duration="111000" />
+      <workItem from="1664764649060" duration="23200000" />
+      <workItem from="1664852961633" duration="13610000" />
+      <workItem from="1664943157171" duration="2474000" />
+      <workItem from="1665021718410" duration="847000" />
+      <workItem from="1665026356289" duration="13765000" />
+      <workItem from="1665110026376" duration="12870000" />
+      <workItem from="1665367850048" duration="78000" />
+      <workItem from="1665377331635" duration="3173000" />
+      <workItem from="1665391914815" duration="3198000" />
+      <workItem from="1665453254473" duration="2503000" />
+      <workItem from="1665466421738" duration="2413000" />
+      <workItem from="1665472168127" duration="757000" />
+      <workItem from="1665484811738" duration="1334000" />
+      <workItem from="1665543931574" duration="611000" />
+      <workItem from="1666251905806" duration="1497000" />
+      <workItem from="1666268976363" duration="7340000" />
+      <workItem from="1666309876133" duration="9610000" />
+      <workItem from="1666523650026" duration="10018000" />
+      <workItem from="1666563119492" duration="3467000" />
+      <workItem from="1666583424536" duration="9739000" />
+      <workItem from="1666595913183" duration="35628000" />
+      <workItem from="1666698295397" duration="2490000" />
+      <workItem from="1666839245610" duration="23634000" />
+      <workItem from="1666929270033" duration="12024000" />
+      <workItem from="1667005292109" duration="1349000" />
+      <workItem from="1667186633590" duration="17563000" />
+      <workItem from="1667271044070" duration="13518000" />
+      <workItem from="1667382807937" duration="1087000" />
+      <workItem from="1667443151981" duration="5725000" />
+      <workItem from="1667474334857" duration="3024000" />
+      <workItem from="1667729673875" duration="8348000" />
+      <workItem from="1667789848142" duration="5668000" />
+      <workItem from="1667814342262" duration="920000" />
+      <workItem from="1667815763531" duration="621000" />
+      <workItem from="1667816486201" duration="587000" />
+      <workItem from="1667820684139" duration="1313000" />
+      <workItem from="1667876218045" duration="11732000" />
+      <workItem from="1667962240959" duration="271000" />
+      <workItem from="1668137125495" duration="4389000" />
+      <workItem from="1668146058488" duration="785000" />
+      <workItem from="1668390953449" duration="1410000" />
+      <workItem from="1668400105453" duration="2004000" />
+      <workItem from="1668752489044" duration="719000" />
+      <workItem from="1670500931296" duration="740000" />
+      <workItem from="1670729950185" duration="303000" />
+      <workItem from="1671018082533" duration="1147000" />
+      <workItem from="1671088474200" duration="1175000" />
+      <workItem from="1671171982491" duration="1709000" />
+      <workItem from="1674106211095" duration="677000" />
+    </task>
+    <task id="LOCAL-00001" summary="первый комит">
+      <created>1660563828647</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1660563828647</updated>
+    </task>
+    <task id="LOCAL-00002" summary="первый комит">
+      <created>1660564701219</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1660564701219</updated>
+    </task>
+    <task id="LOCAL-00003" summary="переписал cuda">
+      <created>1660731957803</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1660731957803</updated>
+    </task>
+    <task id="LOCAL-00004" summary="добавил с классом кэш">
+      <created>1660888979252</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1660888979252</updated>
+    </task>
+    <task id="LOCAL-00005" summary="добавил с классом кэш">
+      <created>1660889532609</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1660889532609</updated>
+    </task>
+    <task id="LOCAL-00006" summary="добавил различные варианты кластеризации для тестов">
+      <created>1661754153994</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1661754153994</updated>
+    </task>
+    <task id="LOCAL-00007" summary="добавил 2 тестовых файла с лэйблами">
+      <created>1661773123889</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1661773123889</updated>
+    </task>
+    <task id="LOCAL-00008" summary="перед отчисткой">
+      <created>1661831156765</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1661831156765</updated>
+    </task>
+    <task id="LOCAL-00009" summary="убрал лишнее в архив">
+      <created>1661833917714</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1661833917714</updated>
+    </task>
+    <task id="LOCAL-00010" summary="комментирование">
+      <created>1661841878466</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1661841878466</updated>
+    </task>
+    <task id="LOCAL-00011" summary="комментирование">
+      <created>1661842079544</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1661842079544</updated>
+    </task>
+    <task id="LOCAL-00012" summary="косметические изменения">
+      <created>1661842206222</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1661842206222</updated>
+    </task>
+    <task id="LOCAL-00013" summary="косметические изменения">
+      <created>1662098161294</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1662098161294</updated>
+    </task>
+    <task id="LOCAL-00014" summary="косметические изменения">
+      <created>1662098389793</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1662098389793</updated>
+    </task>
+    <task id="LOCAL-00015" summary=" исправил воспроизводимость">
+      <created>1662377457301</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1662377457301</updated>
+    </task>
+    <task id="LOCAL-00016" summary="перенес неипользумемые алогоритмы в other exp algos">
+      <created>1662377715727</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1662377715727</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Добавил бинарную РБМ на бинарных данных">
+      <created>1662595580316</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1662595580316</updated>
+    </task>
+    <task id="LOCAL-00018" summary="добавлены анализы лоссов, сидов, клиринга, версия RBM c возможность в установках менять функции активации">
+      <created>1663568175162</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1663568175162</updated>
+    </task>
+    <task id="LOCAL-00019" summary="добавлен клиринг к подбору основной и эксперементальных моделей">
+      <created>1663676996544</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1663676996544</updated>
+    </task>
+    <task id="LOCAL-00020" summary="перед чисткой">
+      <created>1664548603555</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1664548603555</updated>
+    </task>
+    <task id="LOCAL-00021" summary="добавлен скрипт сбора промежуточных данных">
+      <created>1665125431497</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1665125431497</updated>
+    </task>
+    <task id="LOCAL-00022" summary="добавлен файл для тестов с сохранением дат трейна и теста">
+      <created>1666525289055</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1666525289055</updated>
+    </task>
+    <task id="LOCAL-00023" summary="незначительные косметические изменения">
+      <created>1666527108336</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1666527108336</updated>
+    </task>
+    <task id="LOCAL-00024" summary="перед добавлением классификатора">
+      <created>1668137687665</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1668137687665</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="первый комит" />
+    <MESSAGE value="переписал cuda" />
+    <MESSAGE value="добавил с классом кэш" />
+    <MESSAGE value="добавил различные варианты кластеризации для тестов" />
+    <MESSAGE value="добавил 2 тестовых файла с лэйблами" />
+    <MESSAGE value="перед отчисткой" />
+    <MESSAGE value="убрал лишнее в архив" />
+    <MESSAGE value="комментирование" />
+    <MESSAGE value="косметические изменения" />
+    <MESSAGE value=" исправил воспроизводимость" />
+    <MESSAGE value="перенес неипользумемые алогоритмы в other exp algos" />
+    <MESSAGE value="Добавил бинарную РБМ на бинарных данных" />
+    <MESSAGE value="добавлены анализы лоссов, сидов, клиринга, версия RBM c возможность в установках менять функции активации" />
+    <MESSAGE value="добавлен клиринг к подбору основной и эксперементальных моделей" />
+    <MESSAGE value="перед чисткой" />
+    <MESSAGE value="добавлен скрипт сбора промежуточных данных" />
+    <MESSAGE value="добавлен файл для тестов с сохранением дат трейна и теста" />
+    <MESSAGE value="незначительные косметические изменения" />
+    <MESSAGE value="перед добавлением классификатора" />
+    <option name="LAST_COMMIT_MESSAGE" value="перед добавлением классификатора" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/rbm_clust$switch_sign_rbm.coverage" NAME="switch_sign_rbm Coverage Results" MODIFIED="1662966307802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$plot_different_seeds_graph.coverage" NAME="plot_different_seeds_graph Coverage Results" MODIFIED="1663129961164" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$intermedia_data_collector.coverage" NAME="intermedia_data_collector Coverage Results" MODIFIED="1665124362096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$adapt_cliring_switch_sign_rbm.coverage" NAME="adapt_cliring_switch_sign_rbm Coverage Results" MODIFIED="1666592138539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$RBM_cliring.coverage" NAME="RBM_cliring Coverage Results" MODIFIED="1663750024214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$temp.coverage" NAME="temp Coverage Results" MODIFIED="1665052041039" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$cliring_switch_sign_rbmV2.coverage" NAME="cliring_switch_sign_rbmV2 Coverage Results" MODIFIED="1663590562736" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$huinya.coverage" NAME="huinya Coverage Results" MODIFIED="1663308344961" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$stop_loss_select.coverage" NAME="stop_loss_select Coverage Results" MODIFIED="1665048651401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$without_prod_plot_different_seeds_graph.coverage" NAME="without_prod_plot_different_seeds_graph Coverage Results" MODIFIED="1664262658753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$for_test_cliring_switch_sign_rbm.coverage" NAME="for_test_cliring_switch_sign_rbm Coverage Results" MODIFIED="1666337965040" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$just_backtest.coverage" NAME="just_backtest Coverage Results" MODIFIED="1671172508761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$db_scan_rbm.coverage" NAME="db_scan_rbm Coverage Results" MODIFIED="1660919694604" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$parallel_plots.coverage" NAME="parallel_plots Coverage Results" MODIFIED="1665467996242" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$best_switch_sign_rbm.coverage" NAME="best_switch_sign_rbm Coverage Results" MODIFIED="1662980946823" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$switch_sign_rbm_2.coverage" NAME="switch_sign_rbm_2 Coverage Results" MODIFIED="1661325467436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$with_cliring_RBM.coverage" NAME="with_cliring_RBM Coverage Results" MODIFIED="1663306939617" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$one_way_switch_sign_rbm.coverage" NAME="one_way_switch_sign_rbm Coverage Results" MODIFIED="1663139211210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rbm_clust$rbm_run.coverage" NAME="rbm_run Coverage Results" MODIFIED="1660494631070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
